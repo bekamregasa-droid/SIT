@@ -1,0 +1,1699 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIT Projectile Simulator | Advanced 3D Ballistics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/stats.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ====== COLOR THEME ====== */
+        :root {
+            /* Dark Blue to Cyan Gradient */
+            --dark-blue-1: #0A1128;      /* Deep Space Blue */
+            --dark-blue-2: #001F54;      /* Navy Blue */
+            --dark-blue-3: #006B8F;      /* Deep Cyan */
+            --cyan-1: #00B4D8;          /* Cyan */
+            --cyan-2: #00E5FF;          /* Bright Cyan */
+            
+            /* Red Gradient */
+            --red-1: #FF6B6B;          /* Light Red */
+            --red-2: #FF4444;          /* Bright Red */
+            --red-3: #C53030;          /* Deep Red */
+            
+            /* UI Colors */
+            --text-light: #E8F1F2;
+            --text-muted: #8FA3B7;
+            --success: #00D4AA;
+            --warning: #FFB347;
+            --card-bg: rgba(16, 22, 36, 0.95);
+            --glass-effect: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ====== BASE STYLES ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark-blue-1) 0%, var(--dark-blue-2) 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ====== SCROLLABLE LAYOUT ====== */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 100%;
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        /* ====== HEADER ====== */
+        .header {
+            background: linear-gradient(90deg, var(--dark-blue-2), var(--dark-blue-3));
+            padding: 20px 40px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--cyan-1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--cyan-1), var(--cyan-2));
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.3);
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #FF6B6B, #FFA726); /* Light Red-Orange */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .logo-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* ====== HERO SECTION ====== */
+        .hero-section {
+            padding: 80px 40px 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        /* ====== CONTROL PANEL ====== */
+        .control-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 180, 216, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--cyan-1);
+        }
+
+        .panel-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--cyan-1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ====== SIMULATION AREA ====== */
+        .simulation-area {
+            background: rgba(0, 107, 143, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 180, 216, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 650px;
+        }
+
+        #simulation-canvas {
+            width: 100%;
+            height: 550px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, rgba(0, 31, 84, 0.5), rgba(0, 107, 143, 0.3));
+            display: block;
+        }
+
+        .simulation-overlay {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            background: rgba(10, 17, 40, 0.85);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--cyan-1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        /* ====== BUTTONS INSIDE 3D CANVAS ====== */
+        .canvas-controls {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        .canvas-btn {
+            background: linear-gradient(135deg, var(--dark-blue-2), var(--cyan-1));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            min-width: 180px;
+            box-shadow: 0 6px 20px rgba(0, 180, 216, 0.3);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .canvas-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.5);
+            background: linear-gradient(135deg, var(--cyan-1), var(--cyan-2));
+        }
+
+        .canvas-btn.red {
+            background: linear-gradient(135deg, var(--red-1), var(--red-2));
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.3);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .canvas-btn.red:hover {
+            background: linear-gradient(135deg, var(--red-2), var(--red-3));
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.5);
+        }
+
+        /* ====== DATA VISUALIZATION SECTION ====== */
+        .data-section {
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--cyan-1);
+            margin-bottom: 40px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 180, 216, 0.1);
+            height: 400px;
+        }
+
+        .data-table-container {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 180, 216, 0.1);
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        /* ====== CONTROLS STYLING ====== */
+        .control-group {
+            margin-bottom: 30px;
+        }
+
+        .control-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-value {
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--cyan-1);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 16px;
+            border: 1px solid rgba(0, 180, 216, 0.3);
+        }
+
+        .slider-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .slider-with-input {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, var(--dark-blue-3), var(--cyan-1));
+            border-radius: 4px;
+            outline: none;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--cyan-1);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.5);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 180, 216, 0.8);
+        }
+
+        .number-input {
+            width: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--cyan-1);
+            border-radius: 10px;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+        }
+
+        .number-input:focus {
+            border-color: var(--cyan-2);
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.3);
+        }
+
+        /* ====== OTHER BUTTON STYLES ====== */
+        .btn {
+            padding: 14px 25px;
+            border-radius: 10px;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--cyan-1);
+            border: 2px solid var(--cyan-1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 180, 216, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00D4AA, #00A884);
+            color: white;
+            box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .preset-btn {
+            background: rgba(0, 180, 216, 0.1);
+            border: 1px solid rgba(0, 180, 216, 0.3);
+            color: var(--cyan-1);
+            padding: 12px 8px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: var(--cyan-1);
+            color: var(--dark-blue-1);
+            transform: translateY(-2px);
+            border-color: var(--cyan-1);
+        }
+
+        /* ====== STATS CARDS ====== */
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(0, 180, 216, 0.1);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--cyan-1);
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.1);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--cyan-1);
+            line-height: 1;
+        }
+
+        .stat-unit {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-left: 5px;
+            font-weight: 400;
+        }
+
+        /* ====== DATA TABLE ====== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: linear-gradient(90deg, var(--dark-blue-3), var(--cyan-1));
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 180, 216, 0.1);
+            color: var(--text-light);
+        }
+
+        .data-table tr:hover {
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* ====== FULLSCREEN MODE ====== */
+        .fullscreen-launch {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #000000 0%, var(--dark-blue-2) 100%);
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .fullscreen-controls {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10001;
+        }
+
+        .exit-fullscreen {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: rgba(255, 107, 107, 0.9);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .exit-fullscreen:hover {
+            background: var(--red-2);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        /* ====== FOOTER ====== */
+        .footer {
+            background: linear-gradient(90deg, var(--dark-blue-2), var(--dark-blue-3));
+            padding: 30px 40px;
+            border-top: 3px solid var(--cyan-1);
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 15px var(--success);
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ====== RESPONSIVE DESIGN ====== */
+        @media (max-width: 1400px) {
+            .hero-grid, .data-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                position: static;
+                margin-bottom: 40px;
+            }
+            
+            .simulation-overlay {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .simulation-overlay {
+                grid-template-columns: 1fr;
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .preset-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .btn-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-controls {
+                position: static;
+                margin-top: 20px;
+            }
+            
+            .canvas-btn {
+                min-width: 100%;
+            }
+        }
+
+        /* ====== SCROLLBAR STYLING ====== */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--cyan-1), var(--cyan-2));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--cyan-2), #00E5FF);
+        }
+    </style>
+</head>
+<body>
+    <!-- ====== FULLSCREEN MODE ====== -->
+    <div class="fullscreen-launch" id="fullscreen-launch">
+        <canvas class="fullscreen-canvas" id="fullscreen-canvas"></canvas>
+        <div class="fullscreen-controls">
+            <button class="canvas-btn" id="fullscreen-simulate-btn">
+                <i class="fas fa-play"></i> LAUNCH SIMULATION
+            </button>
+        </div>
+        <button class="exit-fullscreen" id="exit-fullscreen">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <!-- ====== MAIN SCROLLABLE CONTENT ====== -->
+    <div class="main-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div class="logo-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-main">SIT PROJECTILE SIMULATOR</div>
+                        <div class="logo-sub">Advanced 3D Ballistics & Physics</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero Section with Controls and 3D View -->
+        <section class="hero-section">
+            <div class="hero-grid">
+                <!-- Control Panel -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-sliders-h"></i> LAUNCH CONTROLS
+                        </h2>
+                        <button class="btn btn-secondary" id="reset-btn">
+                            <i class="fas fa-redo"></i> RESET
+                        </button>
+                    </div>
+
+                    <!-- Velocity Control -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-bolt"></i> INITIAL VELOCITY
+                            </div>
+                            <div class="control-value" id="velocity-value">150 m/s</div>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-with-input">
+                                <input type="range" id="velocity-slider" min="10" max="500" value="150" step="1">
+                                <input type="number" class="number-input" id="velocity-input" min="10" max="500" value="150">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Angle Control -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-angle-up"></i> LAUNCH ANGLE
+                            </div>
+                            <div class="control-value" id="angle-value">45°</div>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-with-input">
+                                <input type="range" id="angle-slider" min="0" max="90" value="45" step="1">
+                                <input type="number" class="number-input" id="angle-input" min="0" max="90" value="45">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mass Control -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-weight"></i> PROJECTILE MASS
+                            </div>
+                            <div class="control-value" id="mass-value">25 kg</div>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-with-input">
+                                <input type="range" id="mass-slider" min="1" max="1000" value="25" step="1">
+                                <input type="number" class="number-input" id="mass-input" min="1" max="1000" value="25">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gravity Control -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-globe"></i> GRAVITY
+                            </div>
+                            <div class="control-value" id="gravity-value">9.8 m/s²</div>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-with-input">
+                                <input type="range" id="gravity-slider" min="0.1" max="30" value="9.8" step="0.1">
+                                <input type="number" class="number-input" id="gravity-input" min="0.1" max="30" value="9.8" step="0.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Air Resistance -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-wind"></i> AIR RESISTANCE
+                            </div>
+                            <div class="control-value" id="resistance-value">0.05</div>
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-with-input">
+                                <input type="range" id="resistance-slider" min="0" max="1" value="0.05" step="0.001">
+                                <input type="number" class="number-input" id="resistance-input" min="0" max="1" value="0.05" step="0.001">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Presets -->
+                    <div class="control-group">
+                        <div class="control-header">
+                            <div class="control-label">
+                                <i class="fas fa-bolt"></i> QUICK PRESETS
+                            </div>
+                        </div>
+                        <div class="preset-grid">
+                            <button class="preset-btn" data-preset="artillery">ARTILLERY</button>
+                            <button class="preset-btn" data-preset="space">SPACE LAUNCH</button>
+                            <button class="preset-btn" data-preset="sniper">SNIPER</button>
+                            <button class="preset-btn" data-preset="mortar">MORTAR</button>
+                            <button class="preset-btn" data-preset="maxrange">MAX RANGE</button>
+                            <button class="preset-btn" data-preset="custom">CUSTOM</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" id="randomize-btn">
+                            <i class="fas fa-random"></i> RANDOMIZE
+                        </button>
+                        <button class="btn btn-success" id="export-btn">
+                            <i class="fas fa-download"></i> EXPORT
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3D Simulation Area -->
+                <div class="simulation-area">
+                    <canvas id="simulation-canvas"></canvas>
+                    
+                    <!-- Live Stats Overlay -->
+                    <div class="simulation-overlay">
+                        <div class="stat-card">
+                            <div class="stat-label">CURRENT HEIGHT</div>
+                            <div class="stat-value" id="current-height">0<span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">CURRENT DISTANCE</div>
+                            <div class="stat-value" id="current-distance">0<span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">AIR TIME</div>
+                            <div class="stat-value" id="air-time">0<span class="stat-unit">s</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">PEAK HEIGHT</div>
+                            <div class="stat-value" id="peak-height">0<span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">TERMINAL VELOCITY</div>
+                            <div class="stat-value" id="terminal-velocity">0<span class="stat-unit">m/s</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">IMPACT ENERGY</div>
+                            <div class="stat-value" id="impact-energy">0<span class="stat-unit">J</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">MAX RANGE</div>
+                            <div class="stat-value" id="max-range">0<span class="stat-unit">m</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">FLIGHT TIME</div>
+                            <div class="stat-value" id="flight-time">0<span class="stat-unit">s</span></div>
+                        </div>
+                    </div>
+
+                    <!-- BUTTONS INSIDE 3D CANVAS AREA (Bottom Corner) -->
+                    <div class="canvas-controls">
+                        <button class="canvas-btn red" id="simulate-btn">
+                            <i class="fas fa-play"></i> LAUNCH SIMULATION
+                        </button>
+                        <button class="canvas-btn" id="launch-fullscreen">
+                            <i class="fas fa-expand"></i> FULLSCREEN LAUNCH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Visualization Section -->
+        <section class="data-section">
+            <h2 class="section-title">
+                <i class="fas fa-chart-line"></i> DATA VISUALIZATION
+            </h2>
+            
+            <div class="data-grid">
+                <!-- Chart Container -->
+                <div class="chart-container">
+                    <canvas id="trajectory-chart"></canvas>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="data-table-container">
+                    <h3 style="color: var(--cyan-1); margin-bottom: 20px; font-size: 20px;">
+                        <i class="fas fa-table"></i> SIMULATION DATA
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>TIME (s)</th>
+                                <th>HEIGHT (m)</th>
+                                <th>DISTANCE (m)</th>
+                                <th>VELOCITY (m/s)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table-body">
+                            <!-- Data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Share Button -->
+            <div style="text-align: center; margin-top: 40px;">
+                <button class="btn btn-success" id="share-btn" style="padding: 18px 50px; font-size: 18px;">
+                    <i class="fas fa-share-alt"></i> SHARE THIS SIMULATION
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>SIMULATION READY</span>
+                </div>
+                <div class="footer-info">
+                    <span style="color: var(--text-muted);">
+                        SIT Projectile Simulator v2.0 | Advanced 3D Ballistics Physics
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ====== GLOBAL VARIABLES ======
+        let scene, camera, renderer, controls;
+        let fullscreenScene, fullscreenCamera, fullscreenRenderer, fullscreenControls;
+        let projectile, trajectoryLine, ground;
+        let simulationRunning = false;
+        let fullscreenMode = false;
+        let simulationData = [];
+        let trajectoryChart;
+        
+        // Physics parameters
+        let initialVelocity = 150;
+        let launchAngle = 45;
+        let mass = 25;
+        let gravity = 9.8;
+        let airResistance = 0.05;
+        
+        // Simulation variables
+        let time = 0;
+        let maxHeight = 0;
+        let airTime = 0;
+        let terminalVelocity = 0;
+        let maxRange = 0;
+        let flightTime = 0;
+        
+        // ====== DOM ELEMENTS ======
+        const elements = {
+            velocity: ['slider', 'input', 'value'],
+            angle: ['slider', 'input', 'value'],
+            mass: ['slider', 'input', 'value'],
+            gravity: ['slider', 'input', 'value'],
+            resistance: ['slider', 'input', 'value']
+        };
+        
+        const el = {};
+        Object.keys(elements).forEach(key => {
+            elements[key].forEach(type => {
+                el[`${key}${type.charAt(0).toUpperCase() + type.slice(1)}`] = 
+                    document.getElementById(`${key}-${type}`);
+            });
+        });
+        
+        // Buttons
+        const simulateBtn = document.getElementById('simulate-btn');
+        const fullscreenSimulateBtn = document.getElementById('fullscreen-simulate-btn');
+        const launchFullscreenBtn = document.getElementById('launch-fullscreen');
+        const resetBtn = document.getElementById('reset-btn');
+        const randomizeBtn = document.getElementById('randomize-btn');
+        const exportBtn = document.getElementById('export-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const exitFullscreenBtn = document.getElementById('exit-fullscreen');
+        const presetBtns = document.querySelectorAll('.preset-btn');
+        
+        // Stats elements
+        const stats = {
+            currentHeight: document.getElementById('current-height'),
+            currentDistance: document.getElementById('current-distance'),
+            airTime: document.getElementById('air-time'),
+            peakHeight: document.getElementById('peak-height'),
+            terminalVelocity: document.getElementById('terminal-velocity'),
+            impactEnergy: document.getElementById('impact-energy'),
+            maxRange: document.getElementById('max-range'),
+            flightTime: document.getElementById('flight-time')
+        };
+        
+        // ====== THREE.JS INITIALIZATION ======
+        function initThreeJS() {
+            // Create main scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0A1128);
+            scene.fog = new THREE.Fog(0x0A1128, 100, 2000);
+            
+            // Create main camera
+            const canvasWidth = document.getElementById('simulation-canvas').offsetWidth;
+            camera = new THREE.PerspectiveCamera(75, canvasWidth / 550, 0.1, 5000);
+            camera.position.set(200, 150, 250);
+            
+            // Create main renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('simulation-canvas'),
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(canvasWidth, 550);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            // Add controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.1;
+            controls.minDistance = 50;
+            controls.maxDistance = 1000;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 200, 100);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            // Create environment
+            createEnvironment();
+            
+            // Window resize handler
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createEnvironment() {
+            // Ground - Dark blue
+            const groundGeometry = new THREE.PlaneGeometry(2000, 2000);
+            const groundMaterial = new THREE.MeshLambertMaterial({ 
+                color: 0x001F54,
+                side: THREE.DoubleSide
+            });
+            ground = new THREE.Mesh(groundGeometry, groundMaterial);
+            ground.rotation.x = Math.PI / 2;
+            ground.position.y = -1;
+            ground.receiveShadow = true;
+            scene.add(ground);
+            
+            // Grid - Cyan theme
+            const gridHelper = new THREE.GridHelper(1000, 50, 0x00B4D8, 0x006B8F);
+            gridHelper.position.y = 0;
+            scene.add(gridHelper);
+            
+            // Projectile - Red to match button
+            const projectileGeometry = new THREE.SphereGeometry(4, 32, 32);
+            const projectileMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xFF6B6B,
+                emissive: 0xFF4444,
+                emissiveIntensity: 0.3,
+                shininess: 100
+            });
+            projectile = new THREE.Mesh(projectileGeometry, projectileMaterial);
+            projectile.castShadow = true;
+            scene.add(projectile);
+            
+            // Trajectory line - Cyan
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x00B4D8,
+                linewidth: 3,
+                transparent: true,
+                opacity: 0.7
+            });
+            const lineGeometry = new THREE.BufferGeometry();
+            trajectoryLine = new THREE.Line(lineGeometry, lineMaterial);
+            scene.add(trajectoryLine);
+            
+            // Add launch platform
+            createLaunchPlatform();
+            
+            // Add multiple targets
+            createTarget(500, 0, 0);
+            createTarget(1000, 0, 0);
+            createTarget(1500, 0, 0);
+        }
+        
+        // ====== SIMULATION FUNCTIONS ======
+        function updateProjectilePosition() {
+            if (!simulationRunning) return;
+            
+            const angleRad = launchAngle * Math.PI / 180;
+            const vx0 = initialVelocity * Math.cos(angleRad);
+            const vy0 = initialVelocity * Math.sin(angleRad);
+            const k = airResistance;
+            
+            // Calculate position with air resistance
+            const vx = vx0 * Math.exp(-k * time / mass);
+            const vy = (vy0 + (gravity * mass / k)) * Math.exp(-k * time / mass) - (gravity * mass / k);
+            
+            const x = (vx0 * mass / k) * (1 - Math.exp(-k * time / mass));
+            const y = (mass / k) * ((vy0 + (gravity * mass / k)) * (1 - Math.exp(-k * time / mass)) - gravity * time);
+            
+            // Update projectile
+            projectile.position.set(x, y, 0);
+            
+            // Update stats
+            updateStats(x, y, Math.sqrt(vx*vx + vy*vy));
+            
+            // Record data point
+            simulationData.push({ x, y, time, velocity: Math.sqrt(vx*vx + vy*vy) });
+            updateTrajectoryLine();
+            updateChart();
+            
+            // Check ground impact
+            if (y <= 0 && time > 0) {
+                endSimulation();
+            }
+            
+            time += 0.05;
+        }
+        
+        function updateStats(x, y, velocity) {
+            stats.currentHeight.textContent = y.toFixed(1);
+            stats.currentDistance.textContent = x.toFixed(1);
+            stats.airTime.textContent = time.toFixed(2);
+            
+            if (y > maxHeight) {
+                maxHeight = y;
+                stats.peakHeight.textContent = maxHeight.toFixed(1);
+            }
+            
+            stats.terminalVelocity.textContent = velocity.toFixed(1);
+            
+            // Calculate impact energy
+            const impactEnergy = 0.5 * mass * velocity * velocity;
+            stats.impactEnergy.textContent = (impactEnergy / 1000).toFixed(0) + 'k';
+            
+            // Calculate theoretical max range
+            const range = (initialVelocity * initialVelocity * Math.sin(2 * launchAngle * Math.PI / 180)) / gravity;
+            stats.maxRange.textContent = range.toFixed(1);
+            
+            // Calculate flight time
+            const flightTimeCalc = (2 * initialVelocity * Math.sin(launchAngle * Math.PI / 180)) / gravity;
+            stats.flightTime.textContent = flightTimeCalc.toFixed(2);
+        }
+        
+        function updateTrajectoryLine() {
+            if (simulationData.length < 2) return;
+            
+            const positions = new Float32Array(simulationData.length * 3);
+            simulationData.forEach((point, i) => {
+                positions[i * 3] = point.x;
+                positions[i * 3 + 1] = point.y;
+                positions[i * 3 + 2] = 0;
+            });
+            
+            trajectoryLine.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            trajectoryLine.geometry.attributes.position.needsUpdate = true;
+        }
+        
+        function endSimulation() {
+            simulationRunning = false;
+            simulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+            simulateBtn.classList.remove('btn-danger');
+            fullscreenSimulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+            updateDataTable();
+        }
+        
+        // ====== CHART.JS INITIALIZATION ======
+        function initChart() {
+            const ctx = document.getElementById('trajectory-chart').getContext('2d');
+            trajectoryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Projectile Trajectory',
+                        data: [],
+                        borderColor: '#00B4D8',
+                        backgroundColor: 'rgba(0, 180, 216, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Distance (m)',
+                                color: '#8FA3B7'
+                            },
+                            grid: {
+                                color: 'rgba(143, 163, 183, 0.1)'
+                            },
+                            ticks: {
+                                color: '#8FA3B7'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Height (m)',
+                                color: '#8FA3B7'
+                            },
+                            grid: {
+                                color: 'rgba(143, 163, 183, 0.1)'
+                            },
+                            ticks: {
+                                color: '#8FA3B7'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#00B4D8',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateChart() {
+            if (simulationData.length > 0) {
+                const lastPoint = simulationData[simulationData.length - 1];
+                trajectoryChart.data.datasets[0].data.push({
+                    x: lastPoint.x,
+                    y: lastPoint.y
+                });
+                trajectoryChart.update('none');
+            }
+        }
+        
+        // ====== UI FUNCTIONS ======
+        function startSimulation() {
+            if (simulationRunning) {
+                simulationRunning = false;
+                simulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+                fullscreenSimulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+            } else {
+                resetSimulation();
+                simulationRunning = true;
+                simulateBtn.innerHTML = '<i class="fas fa-pause"></i> PAUSE SIMULATION';
+                fullscreenSimulateBtn.innerHTML = '<i class="fas fa-pause"></i> PAUSE SIMULATION';
+            }
+        }
+        
+        function resetSimulation() {
+            simulationRunning = false;
+            time = 0;
+            maxHeight = 0;
+            simulationData = [];
+            
+            projectile.position.set(0, 0, 0);
+            
+            // Clear trajectory line
+            trajectoryLine.geometry.setAttribute('position', 
+                new THREE.BufferAttribute(new Float32Array(0), 3));
+            
+            // Reset stats
+            Object.keys(stats).forEach(key => {
+                if (key !== 'maxRange' && key !== 'flightTime') {
+                    stats[key].textContent = '0';
+                }
+            });
+            
+            // Reset chart
+            trajectoryChart.data.datasets[0].data = [];
+            trajectoryChart.update();
+            
+            // Reset table
+            document.getElementById('data-table-body').innerHTML = '';
+            
+            simulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+            fullscreenSimulateBtn.innerHTML = '<i class="fas fa-play"></i> LAUNCH SIMULATION';
+        }
+        
+        function updateSlidersAndInputs() {
+            el.velocitySlider.value = initialVelocity;
+            el.velocityInput.value = initialVelocity;
+            el.velocityValue.textContent = initialVelocity + ' m/s';
+            
+            el.angleSlider.value = launchAngle;
+            el.angleInput.value = launchAngle;
+            el.angleValue.textContent = launchAngle + '°';
+            
+            el.massSlider.value = mass;
+            el.massInput.value = mass;
+            el.massValue.textContent = mass + ' kg';
+            
+            el.gravitySlider.value = gravity;
+            el.gravityInput.value = gravity;
+            el.gravityValue.textContent = gravity + ' m/s²';
+            
+            el.resistanceSlider.value = airResistance;
+            el.resistanceInput.value = airResistance;
+            el.resistanceValue.textContent = airResistance;
+            
+            resetSimulation();
+        }
+        
+        function applyPreset(preset) {
+            const presets = {
+                artillery: { velocity: 300, angle: 30, mass: 50, gravity: 9.8, resistance: 0.1 },
+                space: { velocity: 500, angle: 45, mass: 1000, gravity: 3.7, resistance: 0.01 },
+                sniper: { velocity: 900, angle: 5, mass: 0.01, gravity: 9.8, resistance: 0.005 },
+                mortar: { velocity: 100, angle: 75, mass: 10, gravity: 9.8, resistance: 0.05 },
+                maxrange: { velocity: 200, angle: 45, mass: 1, gravity: 9.8, resistance: 0 },
+                custom: { velocity: 150, angle: 45, mass: 25, gravity: 9.8, resistance: 0.05 }
+            };
+            
+            const presetData = presets[preset];
+            initialVelocity = presetData.velocity;
+            launchAngle = presetData.angle;
+            mass = presetData.mass;
+            gravity = presetData.gravity;
+            airResistance = presetData.resistance;
+            
+            updateSlidersAndInputs();
+        }
+        
+        function randomizeParameters() {
+            initialVelocity = Math.floor(Math.random() * (500 - 50 + 1)) + 50;
+            launchAngle = Math.floor(Math.random() * (85 - 15 + 1)) + 15;
+            mass = Math.floor(Math.random() * (100 - 1 + 1)) + 1;
+            gravity = (Math.random() * (20 - 1.6) + 1.6).toFixed(1);
+            airResistance = (Math.random() * 0.5).toFixed(3);
+            
+            updateSlidersAndInputs();
+        }
+        
+        // ====== FULLSCREEN MODE ======
+        function initFullscreenScene() {
+            fullscreenScene = new THREE.Scene();
+            fullscreenScene.background = new THREE.Color(0x000000);
+            
+            fullscreenCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            fullscreenCamera.position.set(0, 100, 500);
+            
+            const fullscreenCanvas = document.getElementById('fullscreen-canvas');
+            fullscreenRenderer = new THREE.WebGLRenderer({ 
+                canvas: fullscreenCanvas,
+                antialias: true
+            });
+            fullscreenRenderer.setSize(window.innerWidth, window.innerHeight);
+            fullscreenRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            // Create space environment
+            createSpaceEnvironment(fullscreenScene);
+            
+            // Create fullscreen projectile
+            const geometry = new THREE.SphereGeometry(10, 32, 32);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xFF6B6B,
+                emissive: 0xFF4444,
+                emissiveIntensity: 0.5,
+                shininess: 100
+            });
+            const fullscreenProjectile = new THREE.Mesh(geometry, material);
+            fullscreenScene.add(fullscreenProjectile);
+            
+            // Create fullscreen trajectory
+            const fullscreenLineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x00B4D8,
+                linewidth: 3,
+                transparent: true,
+                opacity: 0.7
+            });
+            const fullscreenLineGeometry = new THREE.BufferGeometry();
+            const fullscreenTrajectoryLine = new THREE.Line(fullscreenLineGeometry, fullscreenLineMaterial);
+            fullscreenScene.add(fullscreenTrajectoryLine);
+            
+            // Add orbit controls for fullscreen
+            fullscreenControls = new THREE.OrbitControls(fullscreenCamera, fullscreenRenderer.domElement);
+            fullscreenControls.enableDamping = true;
+            fullscreenControls.dampingFactor = 0.05;
+            
+            // Animate fullscreen scene
+            function animateFullscreen() {
+                requestAnimationFrame(animateFullscreen);
+                if (fullscreenMode) {
+                    fullscreenControls.update();
+                    // Animate the scene
+                    if (simulationRunning && fullscreenProjectile) {
+                        const angleRad = launchAngle * Math.PI / 180;
+                        const vx0 = initialVelocity * Math.cos(angleRad);
+                        const vy0 = initialVelocity * Math.sin(angleRad);
+                        const k = airResistance;
+                        
+                        const vx = vx0 * Math.exp(-k * time / mass);
+                        const vy = (vy0 + (gravity * mass / k)) * Math.exp(-k * time / mass) - (gravity * mass / k);
+                        
+                        const x = (vx0 * mass / k) * (1 - Math.exp(-k * time / mass));
+                        const y = (mass / k) * ((vy0 + (gravity * mass / k)) * (1 - Math.exp(-k * time / mass)) - gravity * time);
+                        
+                        fullscreenProjectile.position.set(x, y, 0);
+                        
+                        // Update trajectory line in fullscreen
+                        if (simulationData.length > 1) {
+                            const positions = new Float32Array(simulationData.length * 3);
+                            simulationData.forEach((point, i) => {
+                                positions[i * 3] = point.x * 2;
+                                positions[i * 3 + 1] = point.y * 2;
+                                positions[i * 3 + 2] = 0;
+                            });
+                            fullscreenTrajectoryLine.geometry.setAttribute('position', 
+                                new THREE.BufferAttribute(positions, 3));
+                        }
+                        
+                        // Follow projectile with camera
+                        fullscreenCamera.position.x = x + 100;
+                        fullscreenCamera.position.y = y + 100;
+                        fullscreenCamera.position.z = 200;
+                        fullscreenCamera.lookAt(x, y, 0);
+                    }
+                    fullscreenRenderer.render(fullscreenScene, fullscreenCamera);
+                }
+            }
+            animateFullscreen();
+        }
+        
+        function createSpaceEnvironment(scene) {
+            // Create starfield
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 10000;
+            const positions = new Float32Array(starsCount * 3);
+            
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 5000;
+                positions[i + 1] = (Math.random() - 0.5) * 5000;
+                positions[i + 2] = (Math.random() - 0.5) * 5000;
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xFFFFFF,
+                size: 1,
+                sizeAttenuation: true
+            });
+            
+            const starField = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starField);
+            
+            // Create earth-like planet
+            const planetGeometry = new THREE.SphereGeometry(200, 32, 32);
+            const planetMaterial = new THREE.MeshPhongMaterial({
+                color: 0x00B4D8,
+                emissive: 0x006B8F,
+                emissiveIntensity: 0.2,
+                shininess: 30
+            });
+            const planet = new THREE.Mesh(planetGeometry, planetMaterial);
+            planet.position.set(-1000, -500, -1000);
+            scene.add(planet);
+        }
+        
+        function launchFullscreenMode() {
+            fullscreenMode = true;
+            document.getElementById('fullscreen-launch').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Start the simulation automatically in fullscreen
+            resetSimulation();
+            simulationRunning = true;
+            simulateBtn.innerHTML = '<i class="fas fa-pause"></i> PAUSE SIMULATION';
+            fullscreenSimulateBtn.innerHTML = '<i class="fas fa-pause"></i> PAUSE SIMULATION';
+            
+            // Force canvas resize
+            setTimeout(() => {
+                fullscreenCamera.aspect = window.innerWidth / window.innerHeight;
+                fullscreenCamera.updateProjectionMatrix();
+                fullscreenRenderer.setSize(window.innerWidth, window.innerHeight);
+            }, 100);
+        }
+        
+        function exitFullscreenMode() {
+            fullscreenMode = false;
+            document.getElementById('fullscreen-launch').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // ====== HELPER FUNCTIONS ======
+        function createLaunchPlatform() {
+            const platformGroup = new THREE.Group();
+            
+            const baseGeometry = new THREE.CylinderGeometry(20, 25, 5, 16);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x2A3549 });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 2.5;
+            platformGroup.add(base);
+            
+            const tubeGeometry = new THREE.CylinderGeometry(5, 8, 30, 8);
+            const tubeMaterial = new THREE.MeshLambertMaterial({ color: 0x555555 });
+            const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            tube.position.y = 17.5;
+            platformGroup.add(tube);
+            
+            platformGroup.position.set(0, 0, 0);
+            scene.add(platformGroup);
+        }
+        
+        function createTarget(x, y, z) {
+            const targetGroup = new THREE.Group();
+            
+            const poleGeometry = new THREE.CylinderGeometry(1, 1, 50, 8);
+            const poleMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+            const pole = new THREE.Mesh(poleGeometry, poleMaterial);
+            pole.position.y = 25;
+            targetGroup.add(pole);
+            
+            const targetGeometry = new THREE.CylinderGeometry(10, 10, 2, 16);
+            const targetMaterial = new THREE.MeshLambertMaterial({ color: 0xFF4444 });
+            const target = new THREE.Mesh(targetGeometry, targetMaterial);
+            target.position.y = 51;
+            targetGroup.add(target);
+            
+            targetGroup.position.set(x, y, z);
+            scene.add(targetGroup);
+        }
+        
+        function updateDataTable() {
+            const tableBody = document.getElementById('data-table-body');
+            tableBody.innerHTML = '';
+            
+            // Show every 10th data point
+            for (let i = 0; i < simulationData.length; i += 10) {
+                const point = simulationData[i];
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${point.time.toFixed(2)}</td>
+                    <td>${point.y.toFixed(1)}</td>
+                    <td>${point.x.toFixed(1)}</td>
+                    <td>${point.velocity.toFixed(1)}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+        
+        function exportData() {
+            let csv = "Time (s),Height (m),Distance (m),Velocity (m/s)\n";
+            simulationData.forEach(point => {
+                csv += `${point.time.toFixed(2)},${point.y.toFixed(2)},${point.x.toFixed(2)},${point.velocity.toFixed(2)}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `projectile_simulation_${Date.now()}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        function shareSimulation() {
+            const params = {
+                velocity: initialVelocity,
+                angle: launchAngle,
+                mass: mass,
+                gravity: gravity,
+                resistance: airResistance
+            };
+            
+            const url = `${window.location.origin}${window.location.pathname}?${new URLSearchParams(params)}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'SIT Projectile Simulator',
+                    text: `Check out my projectile simulation! Velocity: ${initialVelocity} m/s, Angle: ${launchAngle}°`,
+                    url: url
+                });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Simulation link copied to clipboard!');
+            }
+        }
+        
+        // ====== EVENT HANDLERS ======
+        function onWindowResize() {
+            if (fullscreenMode) {
+                fullscreenCamera.aspect = window.innerWidth / window.innerHeight;
+                fullscreenCamera.updateProjectionMatrix();
+                fullscreenRenderer.setSize(window.innerWidth, window.innerHeight);
+            } else {
+                const canvasWidth = document.getElementById('simulation-canvas').parentElement.offsetWidth;
+                camera.aspect = canvasWidth / 550;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvasWidth, 550);
+            }
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            updateProjectilePosition();
+            renderer.render(scene, camera);
+        }
+        
+        // ====== INITIALIZATION ======
+        function init() {
+            initThreeJS();
+            initChart();
+            initFullscreenScene();
+            
+            // Set up slider and input bindings
+            const bindControl = (type) => {
+                const slider = el[`${type}Slider`];
+                const input = el[`${type}Input`];
+                const value = el[`${type}Value`];
+                
+                const update = () => {
+                    let val = type === 'gravity' || type === 'resistance' ? 
+                        parseFloat(slider.value) : parseInt(slider.value);
+                    
+                    if (type === 'velocity') initialVelocity = val;
+                    if (type === 'angle') launchAngle = val;
+                    if (type === 'mass') mass = val;
+                    if (type === 'gravity') gravity = val;
+                    if (type === 'resistance') airResistance = val;
+                    
+                    input.value = val;
+                    value.textContent = val + (type === 'velocity' ? ' m/s' : 
+                                              type === 'angle' ? '°' : 
+                                              type === 'mass' ? ' kg' : 
+                                              type === 'gravity' ? ' m/s²' : '');
+                    resetSimulation();
+                };
+                
+                slider.addEventListener('input', update);
+                input.addEventListener('change', () => {
+                    slider.value = input.value;
+                    update();
+                });
+            };
+            
+            ['velocity', 'angle', 'mass', 'gravity', 'resistance'].forEach(bindControl);
+            
+            // Button event listeners
+            simulateBtn.addEventListener('click', startSimulation);
+            fullscreenSimulateBtn.addEventListener('click', startSimulation);
+            launchFullscreenBtn.addEventListener('click', launchFullscreenMode);
+            resetBtn.addEventListener('click', resetSimulation);
+            randomizeBtn.addEventListener('click', randomizeParameters);
+            exportBtn.addEventListener('click', exportData);
+            shareBtn.addEventListener('click', shareSimulation);
+            exitFullscreenBtn.addEventListener('click', exitFullscreenMode);
+            
+            // Preset buttons
+            presetBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyPreset(btn.dataset.preset);
+                });
+            });
+            
+            // Initialize with default values
+            updateSlidersAndInputs();
+            
+            // Handle ESC key to exit fullscreen
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && fullscreenMode) {
+                    exitFullscreenMode();
+                }
+            });
+        }
+        
+        // Start everything
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
