@@ -1,6 +1,3 @@
-# SIT
-Projectile Motion Simulator App
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
