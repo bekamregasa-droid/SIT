@@ -2,6 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIT Projectile Motion Simulator - Advanced</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
@@ -39,7 +40,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--deep-teal);
+            background-color: var(--soft-mint);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
@@ -61,8 +62,8 @@
         .header-section {
             background-color: var(--deep-teal);
             color: var(--text-light);
-            padding: 0px 0px;
-            width: 0%;
+            padding: 15px 20px;
+            width: 100%;
             box-shadow: 0 4px 12px var(--shadow-medium);
             z-index: 100;
             position: sticky;
@@ -73,18 +74,18 @@
         .header-content {
             display: flex;
             flex-direction: column;
-            max-width: 0px;
+            max-width: 1200px;
             margin: 0 auto;
-            width: 0%;
-            align-items: flex-start;
+            width: 100%;
+            align-items: flex-start; /* Changed from center to flex-start */
         }
 
         .main-heading {
-            font-size: 0px;
-            font-weight: 0;
+            font-size: 42px; /* Larger for emphasis */
+            font-weight: 900;
             letter-spacing: 2px;
             margin-bottom: 4px;
-            text-align: left;
+            text-align: left; /* Changed from center to left */
             text-transform: uppercase;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
@@ -93,285 +94,30 @@
             font-size: 16px;
             font-weight: 400;
             opacity: 0.9;
-            text-align: left;
+            text-align: left; /* Changed from center to left */
             letter-spacing: 3px;
             text-transform: uppercase;
         }
 
-        /* ====== MAIN CONTENT AREA - SCREEN BASED ====== */
+        /* ====== MAIN CONTENT AREA ====== */
         .main-content {
             display: flex;
             flex-direction: column;
             flex: 1;
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             width: 100%;
-            padding: 0;
-        }
-
-        /* ====== SCREENS CONTAINER ====== */
-        .screens-container {
-            flex: 1;
-            display: flex;
-            position: relative;
-            overflow: hidden;
-            min-height: calc(100vh - 180px);
-        }
-
-        /* Individual screens */
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             padding: 20px;
-            overflow-y: auto;
-            background-color: var(--soft-mint);
-            transition: transform 0.5s ease, opacity 0.5s ease;
-            opacity: 0;
-            transform: translateX(100%);
-            pointer-events: none;
         }
 
-        .screen.active {
-            opacity: 1;
-            transform: translateX(0);
-            pointer-events: all;
-        }
-
-        /* ====== SCREEN 1: 3D SIMULATION + FLIGHT DATA ====== */
-        .screen-1 {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
-            align-content: start;
-        }
-
-        /* ====== 3D SIMULATION AREA ====== */
-        .simulation-area {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 6px 16px var(--shadow-light);
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-            height: 100%;
-            min-height: 500px;
-        }
-
-        .simulation-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: var(--deep-teal);
-            color: var(--text-light);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .simulation-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .view-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .view-btn {
-            background-color: var(--button-light-purple);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .view-btn:hover {
-            background-color: #7B68EE;
-            transform: translateY(-2px);
-        }
-
-        .view-btn.active {
-            background-color: var(--accent-orange);
-        }
-
-        .fullscreen-toggle {
-            background-color: var(--button-deep-violet);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-
-        .fullscreen-toggle:hover {
-            background-color: #3A0069;
-            transform: translateY(-2px);
-        }
-
-        .canvas-container {
-            width: 100%;
-            height: calc(100% - 60px);
-            position: relative;
-        }
-
-        #simulation-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* ====== LAUNCH CONTROLS (BOTTOM OF 3D AREA) ====== */
-        .launch-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 10;
-        }
-
-        .launch-button {
-            background-color: var(--button-light-purple);
-            color: var(--deep-teal);
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.3);
-            transition: all 0.3s;
-            min-width: 180px;
-        }
-
-        .launch-button:hover {
-            background-color: #7B68EE;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(147, 112, 219, 0.4);
-        }
-
-        .launch-button:active {
-            transform: translateY(0);
-        }
-
-        .launch-button.red {
-            background-color: var(--button-dark-red);
-            color: white;
-            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
-        }
-
-        .launch-button.red:hover {
-            background-color: #FF6666;
-            box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
-        }
-
-        /* ====== FLIGHT DATA PANEL ====== */
-        .flight-data-panel {
+        /* ====== CONTROL PANEL ====== */
+        .control-panel {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 6px 16px var(--shadow-light);
-            border: 1px solid var(--border-color);
-            height: 100%;
-            overflow-y: auto;
-        }
-
-        .data-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--deep-teal);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-orange);
-        }
-
-        .data-title i {
-            color: var(--accent-orange);
-        }
-
-        .data-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        .data-card {
-            background-color: var(--soft-mint);
-            border-radius: 10px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
-        }
-
-        .data-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 16px var(--shadow-light);
-        }
-
-        .data-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .data-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--deep-teal);
-            line-height: 1;
-        }
-
-        .data-unit {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-left: 4px;
-            font-weight: 600;
-        }
-
-        /* ====== SCREEN 2: LAUNCH PARAMETERS & ADVANCED CONTROLS ====== */
-        .screen-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-content: start;
-        }
-
-        /* Control Panel Styles */
-        .control-panel, .advanced-controls {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
             box-shadow: 0 6px 16px var(--shadow-light);
             border: 1px solid var(--border-color);
-            height: fit-content;
         }
 
         .panel-title {
@@ -392,7 +138,7 @@
 
         .controls-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
@@ -492,9 +238,19 @@
             min-width: 40px;
         }
 
+        /* ====== ADVANCED CONTROLS SECTION ====== */
+        .advanced-controls {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
         .advanced-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -567,22 +323,253 @@
             transform: translateX(26px);
         }
 
-        /* ====== SCREEN 3: ENVIRONMENT & PROJECTILE CUSTOMIZATION ====== */
-        .screen-3 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-content: start;
+        /* ====== 3D SIMULATION AREA ====== */
+        .simulation-area {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            min-height: 450px;
         }
 
-        /* Wind Controls */
+        .simulation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--deep-teal);
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .simulation-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-btn {
+            background-color: var(--button-light-purple);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background-color: #7B68EE;
+            transform: translateY(-2px);
+        }
+
+        .view-btn.active {
+            background-color: var(--accent-orange);
+        }
+
+        .fullscreen-toggle {
+            background-color: var(--button-deep-violet);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-toggle:hover {
+            background-color: #3A0069;
+            transform: translateY(-2px);
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+        }
+
+        #simulation-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ====== LAUNCH CONTROLS (BOTTOM OF 3D AREA) ====== */
+        .launch-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .launch-button {
+            background-color: var(--button-light-purple);
+            color: var(--deep-teal);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px rgba(147, 112, 219, 0.3);
+            transition: all 0.3s;
+            min-width: 180px;
+        }
+
+        .launch-button:hover {
+            background-color: #7B68EE;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(147, 112, 219, 0.4);
+        }
+
+        .launch-button:active {
+            transform: translateY(0);
+        }
+
+        .launch-button.red {
+            background-color: var(--button-dark-red);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+        }
+
+        .launch-button.red:hover {
+            background-color: #FF6666;
+            box-shadow: 0 6px 16px rgba(255, 68, 68, 0.4);
+        }
+
+        /* ====== SIMULATION DATA PANEL ====== */
+        .data-panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .data-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--deep-teal);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .data-title i {
+            color: var(--accent-orange);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .data-card {
+            background-color: var(--soft-mint);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .data-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px var(--shadow-light);
+        }
+
+        .data-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .data-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--deep-teal);
+            line-height: 1;
+        }
+
+        .data-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        /* ====== VISUALIZATION SECTION ====== */
+        .visualization-section {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
+        }
+
+        .visualization-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--deep-teal);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .visualization-title i {
+            color: var(--accent-orange);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+
+        /* ====== WIND CONTROLS SECTION ====== */
         .wind-controls {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 6px 16px var(--shadow-light);
             border: 1px solid var(--border-color);
-            height: fit-content;
         }
 
         .wind-title {
@@ -603,7 +590,7 @@
 
         .wind-control-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
 
@@ -671,19 +658,19 @@
             text-align: center;
         }
 
-        /* Projectile Customization */
+        /* ====== PROJECTILE CUSTOMIZATION ====== */
         .projectile-customization {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 6px 16px var(--shadow-light);
             border: 1px solid var(--border-color);
-            height: fit-content;
         }
 
         .customization-grid {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
@@ -747,54 +734,15 @@
             box-shadow: 0 0 0 2px white, 0 0 0 4px var(--deep-teal);
         }
 
-        /* ====== SCREEN 4: VISUALIZATION & HISTORY ====== */
-        .screen-4 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-content: start;
-        }
-
-        /* Visualization Section */
-        .visualization-section {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 6px 16px var(--shadow-light);
-            border: 1px solid var(--border-color);
-            height: fit-content;
-        }
-
-        .visualization-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--deep-teal);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-orange);
-        }
-
-        .visualization-title i {
-            color: var(--accent-orange);
-        }
-
-        .chart-container {
-            width: 100%;
-            height: 300px;
-            position: relative;
-        }
-
-        /* Simulation History */
+        /* ====== SIMULATION HISTORY ====== */
         .simulation-history {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 6px 16px var(--shadow-light);
             border: 1px solid var(--border-color);
-            height: 400px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
@@ -831,18 +779,100 @@
             font-size: 12px;
         }
 
-        /* ====== SCREEN 5: PLANETARY SIMULATION ====== */
-        .screen-5 {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* ====== PRESETS AND ACTIONS ====== */
+        .actions-panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
         }
 
-        /* Planetary Section */
+        .actions-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--deep-teal);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .actions-title i {
+            color: var(--accent-orange);
+        }
+
+        .presets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .preset-button {
+            background-color: var(--soft-mint);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .preset-button:hover {
+            background-color: var(--deep-teal);
+            color: white;
+            border-color: var(--deep-teal);
+            transform: translateY(-3px);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .action-button {
+            background-color: var(--button-deep-violet);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(75, 0, 130, 0.3);
+        }
+
+        .action-button.reset {
+            background-color: var(--accent-orange);
+        }
+
+        .action-button.reset:hover {
+            box-shadow: 0 6px 12px rgba(242, 106, 46, 0.3);
+        }
+
+        /* ====== PLANETARY SIMULATION SECTION ====== */
         .planetary-section {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 25px;
+            margin: 20px 0;
             box-shadow: 0 6px 20px rgba(11, 47, 51, 0.1);
             border: 1px solid var(--border-color);
         }
@@ -1085,6 +1115,29 @@
             gap: 10px;
         }
 
+        .view-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-btn {
+            background-color: rgba(75, 0, 130, 0.8);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 15px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .view-btn:hover {
+            background-color: var(--button-deep-violet);
+        }
+
         #planet-3d-canvas {
             width: 100%;
             height: 400px;
@@ -1211,147 +1264,6 @@
             font-size: 15px;
         }
 
-        /* ====== SCREEN 6: CONTROLS & ACTIONS ====== */
-        .screen-6 {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* Presets and Actions Section */
-        .actions-panel {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 6px 16px var(--shadow-light);
-            border: 1px solid var(--border-color);
-        }
-
-        .actions-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--deep-teal);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-orange);
-        }
-
-        .actions-title i {
-            color: var(--accent-orange);
-        }
-
-        .presets-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .preset-button {
-            background-color: var(--soft-mint);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-
-        .preset-button:hover {
-            background-color: var(--deep-teal);
-            color: white;
-            border-color: var(--deep-teal);
-            transform: translateY(-3px);
-        }
-
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-        }
-
-        .action-button {
-            background-color: var(--button-deep-violet);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .action-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 12px rgba(75, 0, 130, 0.3);
-        }
-
-        .action-button.reset {
-            background-color: var(--accent-orange);
-        }
-
-        .action-button.reset:hover {
-            box-shadow: 0 6px 12px rgba(242, 106, 46, 0.3);
-        }
-
-        /* ====== SCREEN NAVIGATION (BOTTOM) ====== */
-        .screen-navigation {
-            position: sticky;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--deep-teal);
-            padding: 15px 20px;
-            border-top: 3px solid var(--accent-orange);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background-color: var(--button-deep-violet);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            min-width: 120px;
-            justify-content: center;
-        }
-
-        .nav-btn:hover {
-            background-color: #3A0069;
-            transform: translateY(-3px);
-        }
-
-        .nav-btn.active {
-            background-color: var(--accent-orange);
-            box-shadow: 0 0 15px rgba(242, 106, 46, 0.5);
-        }
-
-        .nav-btn i {
-            font-size: 16px;
-        }
-
         /* ====== FULLSCREEN MODE ====== */
         .fullscreen-overlay {
             position: fixed;
@@ -1472,14 +1384,13 @@
         .footer-section {
             background-color: var(--deep-teal);
             color: var(--text-light);
-            padding: 15px;
+            padding: 20px;
+            margin-top: 20px;
             text-align: center;
-            position: relative;
-            z-index: 50;
         }
 
         .footer-content {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -1514,55 +1425,29 @@
         }
 
         /* ====== RESPONSIVE DESIGN ====== */
-        @media (max-width: 1024px) {
-            .screen-1 {
-                grid-template-columns: 1fr;
-            }
-            
-            .screen-2, .screen-3, .screen-4 {
-                grid-template-columns: 1fr;
-            }
-            
-            .planetary-results {
-                grid-template-columns: 1fr;
-            }
-            
-            .planet-info-panel {
-                grid-template-columns: 1fr;
-            }
-        }
-
         @media (max-width: 768px) {
-            .main-heading {
-                font-size: 32px;
-            }
-            
-            .sub-heading {
-                font-size: 14px;
-                letter-spacing: 1px;
-            }
-            
-            .screens-container {
-                min-height: calc(100vh - 220px);
-            }
-            
-            .screen {
+            .main-content {
                 padding: 15px;
             }
             
-            .screen-navigation {
-                padding: 10px 15px;
-                gap: 8px;
+            .controls-grid {
+                grid-template-columns: 1fr;
             }
             
-            .nav-btn {
-                padding: 10px 15px;
-                min-width: 100px;
-                font-size: 13px;
+            .data-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .presets-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
             }
             
             .canvas-container {
-                height: 400px;
+                height: 350px;
             }
             
             .launch-controls {
@@ -1576,40 +1461,67 @@
                 font-size: 15px;
             }
             
+            .main-heading {
+                font-size: 32px;
+            }
+            
+            .planetary-results {
+                grid-template-columns: 1fr;
+            }
+            
             .planet-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .planet-info-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            .wind-control-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .advanced-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .customization-grid {
+                grid-template-columns: 1fr;
             }
         }
 
         @media (max-width: 480px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .presets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-container {
+                height: 300px;
+            }
+            
             .main-heading {
                 font-size: 28px;
             }
             
-            .screens-container {
-                min-height: calc(100vh - 240px);
-            }
-            
-            .canvas-container {
-                height: 350px;
-            }
-            
-            .nav-btn {
-                min-width: 80px;
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-            
-            .nav-btn span {
-                display: none;
-            }
-            
-            .nav-btn i {
-                font-size: 18px;
+            .sub-heading {
+                font-size: 14px;
+                letter-spacing: 1px;
             }
             
             .planet-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            #planet-3d-canvas {
+                height: 300px;
             }
         }
 
@@ -1622,11 +1534,27 @@
             .main-content {
                 max-width: 100%;
             }
+            
+            .control-panel, .simulation-area, .data-panel, .visualization-section, .actions-panel, .planetary-section {
+                width: 100%;
+            }
         }
 
         /* ====== UTILITY CLASSES ====== */
         .hidden {
             display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mb-10 {
+            margin-bottom: 10px;
         }
 
         /* ====== SCROLLBAR STYLING ====== */
@@ -1663,622 +1591,573 @@
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <!-- Screens Container -->
-            <div class="screens-container">
-                <!-- Screen 1: 3D Simulation + Flight Data -->
-                <div class="screen screen-1 active" id="screen-1">
-                    <!-- 3D Simulation Area -->
-                    <section class="simulation-area">
-                        <div class="simulation-header">
-                            <div class="simulation-title">
-                                <i class="fas fa-cube"></i> 3D Projectile Simulation
-                            </div>
-                            <div class="view-controls">
-                                <button class="view-btn active" data-view="perspective">
-                                    <i class="fas fa-eye"></i> Perspective
-                                </button>
-                                <button class="view-btn" data-view="top">
-                                    <i class="fas fa-satellite"></i> Top View
-                                </button>
-                                <button class="view-btn" data-view="side">
-                                    <i class="fas fa-arrows-alt-h"></i> Side View
-                                </button>
-                                <button class="fullscreen-toggle" id="fullscreen-toggle">
-                                    <i class="fas fa-expand"></i> Fullscreen
-                                </button>
-                            </div>
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Launch Parameters</h2>
+                <div class="controls-grid">
+                    <!-- Velocity Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-tachometer-alt"></i> Initial Velocity</span>
+                            <span class="control-value" id="velocity-value">50 m/s</span>
                         </div>
-                        <div class="canvas-container">
-                            <canvas id="simulation-canvas"></canvas>
-                            
-                            <!-- Launch Controls at Bottom Right of 3D Area -->
-                            <div class="launch-controls">
-                                <button class="launch-button red" id="reset-simulation">
-                                    <i class="fas fa-redo"></i> Reset
-                                </button>
-                                <button class="launch-button" id="launch-button">
-                                    <i class="fas fa-rocket"></i> Launch Projectile
-                                </button>
-                                <button class="launch-button" id="multi-launch">
-                                    <i class="fas fa-layer-group"></i> Multi Launch
-                                </button>
-                            </div>
+                        <div class="slider-container">
+                            <input type="range" id="velocity-slider" min="10" max="200" value="50" step="1">
                         </div>
-                    </section>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="velocity-input" min="10" max="200" value="50" step="1">
+                            <span class="unit-label">m/s</span>
+                        </div>
+                    </div>
 
-                    <!-- Flight Data Panel -->
-                    <section class="flight-data-panel">
-                        <h2 class="data-title"><i class="fas fa-chart-line"></i> Advanced Flight Data</h2>
-                        <div class="data-grid">
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-ruler-vertical"></i> Current Height</div>
-                                <div class="data-value" id="current-height">0.0<span class="data-unit"> m</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-ruler-horizontal"></i> Current Distance</div>
-                                <div class="data-value" id="current-distance">0.0<span class="data-unit"> m</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-clock"></i> Time of Flight</div>
-                                <div class="data-value" id="flight-time">0.0<span class="data-unit"> s</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-chart-area"></i> Peak Height</div>
-                                <div class="data-value" id="peak-height">0.0<span class="data-unit"> m</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-bullseye"></i> Max Range</div>
-                                <div class="data-value" id="max-range">0.0<span class="data-unit"> m</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-tachometer-alt"></i> Current Velocity</div>
-                                <div class="data-value" id="current-velocity">0.0<span class="data-unit"> m/s</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-stopwatch"></i> Time to Peak</div>
-                                <div class="data-value" id="time-to-peak">0.0<span class="data-unit"> s</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-bolt"></i> Kinetic Energy</div>
-                                <div class="data-value" id="kinetic-energy">0.0<span class="data-unit"> kJ</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-compress-arrows-alt"></i> Air Resistance Force</div>
-                                <div class="data-value" id="drag-force">0.0<span class="data-unit"> N</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-weight"></i> Weight Force</div>
-                                <div class="data-value" id="weight-force">98.1<span class="data-unit"> N</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-fire"></i> Impact Energy</div>
-                                <div class="data-value" id="impact-energy">0.0<span class="data-unit"> kJ</span></div>
-                            </div>
-                            <div class="data-card">
-                                <div class="data-label"><i class="fas fa-chart-pie"></i> Energy Efficiency</div>
-                                <div class="data-value" id="energy-efficiency">0.0<span class="data-unit"> %</span></div>
-                            </div>
+                    <!-- Angle Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-angle-up"></i> Launch Angle</span>
+                            <span class="control-value" id="angle-value">45°</span>
                         </div>
-                    </section>
+                        <div class="slider-container">
+                            <input type="range" id="angle-slider" min="0" max="90" value="45" step="1">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="angle-input" min="0" max="90" value="45" step="1">
+                            <span class="unit-label">°</span>
+                        </div>
+                    </div>
+
+                    <!-- Mass Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-weight-hanging"></i> Projectile Mass</span>
+                            <span class="control-value" id="mass-value">10 kg</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="mass-slider" min="1" max="100" value="10" step="1">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="mass-input" min="1" max="100" value="10" step="1">
+                            <span class="unit-label">kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Gravity Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-globe-americas"></i> Gravity</span>
+                            <span class="control-value" id="gravity-value">9.81 m/s²</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="gravity-slider" min="1.62" max="24.79" value="9.81" step="0.01">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="gravity-input" min="1.62" max="24.79" value="9.81" step="0.01">
+                            <span class="unit-label">m/s²</span>
+                        </div>
+                    </div>
+
+                    <!-- Air Resistance Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-wind"></i> Air Resistance</span>
+                            <span class="control-value" id="resistance-value">0.1</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="resistance-slider" min="0" max="0.5" value="0.1" step="0.01">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="resistance-input" min="0" max="0.5" value="0.1" step="0.01">
+                            <span class="unit-label">Coefficient</span>
+                        </div>
+                    </div>
+
+                    <!-- Height Control -->
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span><i class="fas fa-mountain"></i> Launch Height</span>
+                            <span class="control-value" id="height-value">10 m</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="height-slider" min="0" max="100" value="10" step="1">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="height-input" min="0" max="100" value="10" step="1">
+                            <span class="unit-label">m</span>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                <!-- Screen 2: Launch Parameters & Advanced Controls -->
-                <div class="screen screen-2" id="screen-2">
-                    <!-- Control Panel -->
-                    <section class="control-panel">
-                        <h2 class="panel-title"><i class="fas fa-sliders-h"></i> Launch Parameters</h2>
-                        <div class="controls-grid">
-                            <!-- Velocity Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-tachometer-alt"></i> Initial Velocity</span>
-                                    <span class="control-value" id="velocity-value">50 m/s</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="velocity-slider" min="10" max="200" value="50" step="1">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="velocity-input" min="10" max="200" value="50" step="1">
-                                    <span class="unit-label">m/s</span>
-                                </div>
-                            </div>
-
-                            <!-- Angle Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-angle-up"></i> Launch Angle</span>
-                                    <span class="control-value" id="angle-value">45°</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="angle-slider" min="0" max="90" value="45" step="1">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="angle-input" min="0" max="90" value="45" step="1">
-                                    <span class="unit-label">°</span>
-                                </div>
-                            </div>
-
-                            <!-- Mass Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-weight-hanging"></i> Projectile Mass</span>
-                                    <span class="control-value" id="mass-value">10 kg</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="mass-slider" min="1" max="100" value="10" step="1">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="mass-input" min="1" max="100" value="10" step="1">
-                                    <span class="unit-label">kg</span>
-                                </div>
-                            </div>
-
-                            <!-- Gravity Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-globe-americas"></i> Gravity</span>
-                                    <span class="control-value" id="gravity-value">9.81 m/s²</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="gravity-slider" min="1.62" max="24.79" value="9.81" step="0.01">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="gravity-input" min="1.62" max="24.79" value="9.81" step="0.01">
-                                    <span class="unit-label">m/s²</span>
-                                </div>
-                            </div>
-
-                            <!-- Air Resistance Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-wind"></i> Air Resistance</span>
-                                    <span class="control-value" id="resistance-value">0.1</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="resistance-slider" min="0" max="0.5" value="0.1" step="0.01">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="resistance-input" min="0" max="0.5" value="0.1" step="0.01">
-                                    <span class="unit-label">Coefficient</span>
-                                </div>
-                            </div>
-
-                            <!-- Height Control -->
-                            <div class="control-group">
-                                <div class="control-label">
-                                    <span><i class="fas fa-mountain"></i> Launch Height</span>
-                                    <span class="control-value" id="height-value">10 m</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="height-slider" min="0" max="100" value="10" step="1">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="height-input" min="0" max="100" value="10" step="1">
-                                    <span class="unit-label">m</span>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- Advanced Controls -->
-                    <section class="advanced-controls">
-                        <h2 class="panel-title"><i class="fas fa-cogs"></i> Advanced Physics Parameters</h2>
-                        <div class="advanced-grid">
-                            <div class="advanced-option">
-                                <label><i class="fas fa-drafting-compass"></i> Drag Coefficient:</label>
-                                <input type="range" id="drag-coefficient" min="0" max="1" value="0.47" step="0.01">
-                                <span class="control-value" id="drag-value">0.47</span>
-                            </div>
-                            <div class="advanced-option">
-                                <label><i class="fas fa-plane"></i> Lift Force:</label>
-                                <input type="range" id="lift-force" min="0" max="10" value="0" step="0.1">
-                                <span class="control-value" id="lift-value">0 N</span>
-                            </div>
-                            <div class="advanced-option">
-                                <label><i class="fas fa-sync-alt"></i> Spin Rate:</label>
-                                <input type="range" id="spin-rate" min="0" max="1000" value="0" step="10">
-                                <span class="control-value" id="spin-value">0 rpm</span>
-                            </div>
-                            <div class="advanced-option">
-                                <label><i class="fas fa-thermometer-half"></i> Air Density:</label>
-                                <input type="range" id="air-density" min="0.5" max="2" value="1.2" step="0.1">
-                                <span class="control-value" id="density-value">1.2 kg/m³</span>
-                            </div>
-                        </div>
-                    </section>
+            <!-- Advanced Controls -->
+            <section class="advanced-controls">
+                <h2 class="panel-title"><i class="fas fa-cogs"></i> Advanced Physics Parameters</h2>
+                <div class="advanced-grid">
+                    <div class="advanced-option">
+                        <label><i class="fas fa-drafting-compass"></i> Drag Coefficient:</label>
+                        <input type="range" id="drag-coefficient" min="0" max="1" value="0.47" step="0.01">
+                        <span class="control-value" id="drag-value">0.47</span>
+                    </div>
+                    <div class="advanced-option">
+                        <label><i class="fas fa-plane"></i> Lift Force:</label>
+                        <input type="range" id="lift-force" min="0" max="10" value="0" step="0.1">
+                        <span class="control-value" id="lift-value">0 N</span>
+                    </div>
+                    <div class="advanced-option">
+                        <label><i class="fas fa-sync-alt"></i> Spin Rate:</label>
+                        <input type="range" id="spin-rate" min="0" max="1000" value="0" step="10">
+                        <span class="control-value" id="spin-value">0 rpm</span>
+                    </div>
+                    <div class="advanced-option">
+                        <label><i class="fas fa-thermometer-half"></i> Air Density:</label>
+                        <input type="range" id="air-density" min="0.5" max="2" value="1.2" step="0.1">
+                        <span class="control-value" id="density-value">1.2 kg/m³</span>
+                    </div>
                 </div>
+            </section>
 
-                <!-- Screen 3: Environment & Projectile Customization -->
-                <div class="screen screen-3" id="screen-3">
-                    <!-- Wind Controls -->
-                    <section class="wind-controls">
-                        <h2 class="wind-title"><i class="fas fa-wind"></i> Wind & Environmental Controls</h2>
-                        <div class="wind-control-grid">
-                            <div class="wind-direction-control">
-                                <div class="wind-direction-display">
-                                    <div class="wind-direction-arrow" id="wind-direction-arrow"></div>
-                                </div>
-                                <div class="wind-direction-labels">
-                                    <span>W</span>
-                                    <span>N</span>
-                                    <span>E</span>
-                                    <span>S</span>
-                                </div>
-                                <input type="range" id="wind-direction-slider" min="0" max="360" value="0" step="1">
-                                <div class="control-value" id="wind-direction-value">0° (East)</div>
-                            </div>
-                            
-                            <div class="wind-speed-control">
-                                <div class="control-label">
-                                    <span><i class="fas fa-tachometer-alt"></i> Wind Speed</span>
-                                    <span class="control-value" id="wind-speed-value">0 m/s</span>
-                                </div>
-                                <div class="slider-container">
-                                    <input type="range" id="wind-speed-slider" min="0" max="50" value="0" step="0.1">
-                                </div>
-                                <div class="input-with-unit">
-                                    <input type="number" class="number-input" id="wind-speed-input" min="0" max="50" value="0" step="0.1">
-                                    <span class="unit-label">m/s</span>
-                                </div>
-                                <div class="wind-speed-value" id="wind-display">No Wind</div>
-                            </div>
-                            
-                            <div class="control-group">
-                                <div class="advanced-option">
-                                    <label><i class="fas fa-cloud-rain"></i> Rain Effect:</label>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="rain-effect">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div class="advanced-option">
-                                    <label><i class="fas fa-snowflake"></i> Snow Effect:</label>
-                                    <label class="toggle-switch">
-                                        <input type="checkbox" id="snow-effect">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                                <div class="advanced-option">
-                                    <label><i class="fas fa-smog"></i> Fog Effect:</label>
-                                    <input type="range" id="fog-density" min="0" max="100" value="0" step="1">
-                                    <span class="control-value" id="fog-value">0%</span>
-                                </div>
-                            </div>
+            <!-- Projectile Customization -->
+            <section class="projectile-customization">
+                <h2 class="panel-title"><i class="fas fa-shapes"></i> Projectile Customization</h2>
+                <div class="customization-grid">
+                    <div class="control-group">
+                        <label class="control-label"><i class="fas fa-shapes"></i> Projectile Shape</label>
+                        <div class="shape-options">
+                            <button class="shape-btn active" data-shape="sphere">
+                                <i class="fas fa-circle shape-icon"></i>
+                                <span>Sphere</span>
+                            </button>
+                            <button class="shape-btn" data-shape="cube">
+                                <i class="fas fa-cube shape-icon"></i>
+                                <span>Cube</span>
+                            </button>
+                            <button class="shape-btn" data-shape="pyramid">
+                                <i class="fas fa-gem shape-icon"></i>
+                                <span>Pyramid</span>
+                            </button>
+                            <button class="shape-btn" data-shape="cylinder">
+                                <i class="fas fa-dot-circle shape-icon"></i>
+                                <span>Cylinder</span>
+                            </button>
                         </div>
-                    </section>
-
-                    <!-- Projectile Customization -->
-                    <section class="projectile-customization">
-                        <h2 class="panel-title"><i class="fas fa-shapes"></i> Projectile Customization</h2>
-                        <div class="customization-grid">
-                            <div class="control-group">
-                                <label class="control-label"><i class="fas fa-shapes"></i> Projectile Shape</label>
-                                <div class="shape-options">
-                                    <button class="shape-btn active" data-shape="sphere">
-                                        <i class="fas fa-circle shape-icon"></i>
-                                        <span>Sphere</span>
-                                    </button>
-                                    <button class="shape-btn" data-shape="cube">
-                                        <i class="fas fa-cube shape-icon"></i>
-                                        <span>Cube</span>
-                                    </button>
-                                    <button class="shape-btn" data-shape="pyramid">
-                                        <i class="fas fa-gem shape-icon"></i>
-                                        <span>Pyramid</span>
-                                    </button>
-                                    <button class="shape-btn" data-shape="cylinder">
-                                        <i class="fas fa-dot-circle shape-icon"></i>
-                                        <span>Cylinder</span>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label"><i class="fas fa-palette"></i> Projectile Color</label>
-                                <div class="color-options">
-                                    <div class="color-btn active" style="background-color: #9370DB;" data-color="#9370DB"></div>
-                                    <div class="color-btn" style="background-color: #FF4444;" data-color="#FF4444"></div>
-                                    <div class="color-btn" style="background-color: #4B0082;" data-color="#4B0082"></div>
-                                    <div class="color-btn" style="background-color: #F26A2E;" data-color="#F26A2E"></div>
-                                    <div class="color-btn" style="background-color: #2E8B57;" data-color="#2E8B57"></div>
-                                    <div class="color-btn" style="background-color: #DAA520;" data-color="#DAA520"></div>
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label"><i class="fas fa-draw-polygon"></i> Trajectory Style</label>
-                                <div class="shape-options">
-                                    <button class="shape-btn active" data-trajectory="line">
-                                        <i class="fas fa-wave-square shape-icon"></i>
-                                        <span>Line</span>
-                                    </button>
-                                    <button class="shape-btn" data-trajectory="dashed">
-                                        <i class="fas fa-grip-lines shape-icon"></i>
-                                        <span>Dashed</span>
-                                    </button>
-                                    <button class="shape-btn" data-trajectory="points">
-                                        <i class="fas fa-braille shape-icon"></i>
-                                        <span>Points</span>
-                                    </button>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i class="fas fa-palette"></i> Projectile Color</label>
+                        <div class="color-options">
+                            <div class="color-btn active" style="background-color: #9370DB;" data-color="#9370DB"></div>
+                            <div class="color-btn" style="background-color: #FF4444;" data-color="#FF4444"></div>
+                            <div class="color-btn" style="background-color: #4B0082;" data-color="#4B0082"></div>
+                            <div class="color-btn" style="background-color: #F26A2E;" data-color="#F26A2E"></div>
+                            <div class="color-btn" style="background-color: #2E8B57;" data-color="#2E8B57"></div>
+                            <div class="color-btn" style="background-color: #DAA520;" data-color="#DAA520"></div>
                         </div>
-                    </section>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label"><i class="fas fa-draw-polygon"></i> Trajectory Style</label>
+                        <div class="shape-options">
+                            <button class="shape-btn active" data-trajectory="line">
+                                <i class="fas fa-wave-square shape-icon"></i>
+                                <span>Line</span>
+                            </button>
+                            <button class="shape-btn" data-trajectory="dashed">
+                                <i class="fas fa-grip-lines shape-icon"></i>
+                                <span>Dashed</span>
+                            </button>
+                            <button class="shape-btn" data-trajectory="points">
+                                <i class="fas fa-braille shape-icon"></i>
+                                <span>Points</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                <!-- Screen 4: Visualization & History -->
-                <div class="screen screen-4" id="screen-4">
-                    <!-- Visualization Section -->
-                    <section class="visualization-section">
-                        <h2 class="visualization-title"><i class="fas fa-chart-bar"></i> Advanced Trajectory Analysis</h2>
-                        <div class="chart-container">
-                            <canvas id="trajectory-chart"></canvas>
+            <!-- Wind Controls -->
+            <section class="wind-controls">
+                <h2 class="wind-title"><i class="fas fa-wind"></i> Wind & Environmental Controls</h2>
+                <div class="wind-control-grid">
+                    <div class="wind-direction-control">
+                        <div class="wind-direction-display">
+                            <div class="wind-direction-arrow" id="wind-direction-arrow"></div>
                         </div>
-                    </section>
-
-                    <!-- Simulation History -->
-                    <section class="simulation-history">
-                        <h2 class="panel-title"><i class="fas fa-history"></i> Simulation History</h2>
-                        <div class="history-list" id="history-list">
-                            <!-- History items will be added here -->
+                        <div class="wind-direction-labels">
+                            <span>W</span>
+                            <span>N</span>
+                            <span>E</span>
+                            <span>S</span>
                         </div>
-                    </section>
+                        <input type="range" id="wind-direction-slider" min="0" max="360" value="0" step="1">
+                        <div class="control-value" id="wind-direction-value">0° (East)</div>
+                    </div>
+                    
+                    <div class="wind-speed-control">
+                        <div class="control-label">
+                            <span><i class="fas fa-tachometer-alt"></i> Wind Speed</span>
+                            <span class="control-value" id="wind-speed-value">0 m/s</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="wind-speed-slider" min="0" max="50" value="0" step="0.1">
+                        </div>
+                        <div class="input-with-unit">
+                            <input type="number" class="number-input" id="wind-speed-input" min="0" max="50" value="0" step="0.1">
+                            <span class="unit-label">m/s</span>
+                        </div>
+                        <div class="wind-speed-value" id="wind-display">No Wind</div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="advanced-option">
+                            <label><i class="fas fa-cloud-rain"></i> Rain Effect:</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="rain-effect">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="advanced-option">
+                            <label><i class="fas fa-snowflake"></i> Snow Effect:</label>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="snow-effect">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div class="advanced-option">
+                            <label><i class="fas fa-smog"></i> Fog Effect:</label>
+                            <input type="range" id="fog-density" min="0" max="100" value="0" step="1">
+                            <span class="control-value" id="fog-value">0%</span>
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                <!-- Screen 5: Planetary Simulation -->
-                <div class="screen screen-5" id="screen-5">
-                    <!-- ====== PLANETARY SIMULATION SECTION ====== -->
-                    <section class="planetary-section">
-                        <h2 class="section-title"><i class="fas fa-globe-americas"></i> Planetary Projectile Comparison</h2>
-                        
-                        <div class="planet-selector">
-                            <div class="planet-grid">
-                                <div class="planet-card active" data-planet="earth">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #2E8B57, #3CB371);">
-                                        <i class="fas fa-globe-americas"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Earth</div>
-                                        <div class="planet-gravity">9.81 m/s²</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="planet-card" data-planet="moon">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #808080, #A9A9A9);">
-                                        <i class="fas fa-moon"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Moon</div>
-                                        <div class="planet-gravity">1.62 m/s²</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="planet-card" data-planet="mars">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #C1440E, #E25822);">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Mars</div>
-                                        <div class="planet-gravity">3.71 m/s²</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="planet-card" data-planet="venus">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #DAA520, #F0E68C);">
-                                        <i class="fas fa-venus"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Venus</div>
-                                        <div class="planet-gravity">8.87 m/s²</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="planet-card" data-planet="jupiter">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #D2691E, #F4A460);">
-                                        <i class="fas fa-globe"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Jupiter</div>
-                                        <div class="planet-gravity">24.79 m/s²</div>
-                                    </div>
-                                </div>
-                                
-                                <div class="planet-card" data-planet="custom">
-                                    <div class="planet-icon" style="background: linear-gradient(135deg, #6A5ACD, #9370DB);">
-                                        <i class="fas fa-cogs"></i>
-                                    </div>
-                                    <div class="planet-info">
-                                        <div class="planet-name">Custom</div>
-                                        <div class="planet-gravity">Adjustable</div>
-                                    </div>
-                                </div>
+            <!-- 3D Simulation Area -->
+            <section class="simulation-area">
+                <div class="simulation-header">
+                    <div class="simulation-title">
+                        <i class="fas fa-cube"></i> 3D Projectile Simulation
+                    </div>
+                    <div class="view-controls">
+                        <button class="view-btn active" data-view="perspective">
+                            <i class="fas fa-eye"></i> Perspective
+                        </button>
+                        <button class="view-btn" data-view="top">
+                            <i class="fas fa-satellite"></i> Top View
+                        </button>
+                        <button class="view-btn" data-view="side">
+                            <i class="fas fa-arrows-alt-h"></i> Side View
+                        </button>
+                        <button class="fullscreen-toggle" id="fullscreen-toggle">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                    </div>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="simulation-canvas"></canvas>
+                    
+                    <!-- Launch Controls at Bottom Right of 3D Area -->
+                    <div class="launch-controls">
+                        <button class="launch-button red" id="reset-simulation">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button class="launch-button" id="launch-button">
+                            <i class="fas fa-rocket"></i> Launch Projectile
+                        </button>
+                        <button class="launch-button" id="multi-launch">
+                            <i class="fas fa-layer-group"></i> Multi Launch
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simulation Data Panel -->
+            <section class="data-panel">
+                <h2 class="data-title"><i class="fas fa-chart-line"></i> Advanced Flight Data</h2>
+                <div class="data-grid">
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-ruler-vertical"></i> Current Height</div>
+                        <div class="data-value" id="current-height">0.0<span class="data-unit"> m</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-ruler-horizontal"></i> Current Distance</div>
+                        <div class="data-value" id="current-distance">0.0<span class="data-unit"> m</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-clock"></i> Time of Flight</div>
+                        <div class="data-value" id="flight-time">0.0<span class="data-unit"> s</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-chart-area"></i> Peak Height</div>
+                        <div class="data-value" id="peak-height">0.0<span class="data-unit"> m</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-bullseye"></i> Max Range</div>
+                        <div class="data-value" id="max-range">0.0<span class="data-unit"> m</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-tachometer-alt"></i> Current Velocity</div>
+                        <div class="data-value" id="current-velocity">0.0<span class="data-unit"> m/s</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-stopwatch"></i> Time to Peak</div>
+                        <div class="data-value" id="time-to-peak">0.0<span class="data-unit"> s</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-bolt"></i> Kinetic Energy</div>
+                        <div class="data-value" id="kinetic-energy">0.0<span class="data-unit"> kJ</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-compress-arrows-alt"></i> Air Resistance Force</div>
+                        <div class="data-value" id="drag-force">0.0<span class="data-unit"> N</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-weight"></i> Weight Force</div>
+                        <div class="data-value" id="weight-force">98.1<span class="data-unit"> N</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-fire"></i> Impact Energy</div>
+                        <div class="data-value" id="impact-energy">0.0<span class="data-unit"> kJ</span></div>
+                    </div>
+                    <div class="data-card">
+                        <div class="data-label"><i class="fas fa-chart-pie"></i> Energy Efficiency</div>
+                        <div class="data-value" id="energy-efficiency">0.0<span class="data-unit"> %</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Simulation History -->
+            <section class="simulation-history">
+                <h2 class="panel-title"><i class="fas fa-history"></i> Simulation History</h2>
+                <div class="history-list" id="history-list">
+                    <!-- History items will be added here -->
+                </div>
+            </section>
+
+            <!-- Visualization Section -->
+            <section class="visualization-section">
+                <h2 class="visualization-title"><i class="fas fa-chart-bar"></i> Advanced Trajectory Analysis</h2>
+                <div class="chart-container">
+                    <canvas id="trajectory-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- ====== PLANETARY SIMULATION SECTION ====== -->
+            <section class="planetary-section">
+                <h2 class="section-title"><i class="fas fa-globe-americas"></i> Planetary Projectile Comparison</h2>
+                
+                <div class="planet-selector">
+                    <div class="planet-grid">
+                        <div class="planet-card active" data-planet="earth">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #2E8B57, #3CB371);">
+                                <i class="fas fa-globe-americas"></i>
+                            </div>
+                            <div class="planet-info">
+                                <div class="planet-name">Earth</div>
+                                <div class="planet-gravity">9.81 m/s²</div>
                             </div>
                         </div>
                         
-                        <div class="planetary-comparison">
-                            <div class="comparison-controls">
-                                <div class="planet-control-group">
-                                    <label class="planet-control-label">
-                                        <i class="fas fa-tachometer-alt"></i> Velocity
-                                    </label>
-                                    <input type="range" class="planet-slider" id="planet-velocity" min="10" max="200" value="50">
-                                    <div class="planet-slider-value">50 m/s</div>
-                                </div>
-                                
-                                <div class="planet-control-group">
-                                    <label class="planet-control-label">
-                                        <i class="fas fa-angle-up"></i> Angle
-                                    </label>
-                                    <input type="range" class="planet-slider" id="planet-angle" min="0" max="90" value="45">
-                                    <div class="planet-slider-value">45°</div>
-                                </div>
-                                
-                                <button class="planet-simulate-btn" id="planet-simulate-btn">
-                                    <i class="fas fa-rocket"></i> Simulate All Planets
-                                </button>
+                        <div class="planet-card" data-planet="moon">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #808080, #A9A9A9);">
+                                <i class="fas fa-moon"></i>
                             </div>
-                            
-                            <div class="planetary-results">
-                                <div class="planet-results-table">
-                                    <table class="planet-data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Planet</th>
-                                                <th>Gravity</th>
-                                                <th>Max Height</th>
-                                                <th>Max Range</th>
-                                                <th>Flight Time</th>
-                                                <th>Impact Velocity</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="planet-data-body">
-                                            <!-- Data will be populated here -->
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                <div class="planet-chart-container">
-                                    <canvas id="planet-comparison-chart"></canvas>
-                                </div>
+                            <div class="planet-info">
+                                <div class="planet-name">Moon</div>
+                                <div class="planet-gravity">1.62 m/s²</div>
                             </div>
                         </div>
                         
-                        <div class="planet-3d-viewer">
-                            <div class="viewer-header">
-                                <h3><i class="fas fa-eye"></i> 3D Planetary View</h3>
-                                <div class="view-controls">
-                                    <button class="view-btn" id="rotate-view">
-                                        <i class="fas fa-sync-alt"></i> Auto Rotate
-                                    </button>
-                                    <button class="view-btn" id="zoom-view">
-                                        <i class="fas fa-search"></i> Zoom
-                                    </button>
-                                </div>
+                        <div class="planet-card" data-planet="mars">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #C1440E, #E25822);">
+                                <i class="fas fa-globe"></i>
                             </div>
-                            <div class="planet-3d-canvas" id="planet-3d-canvas">
-                                <!-- 3D Canvas will be rendered here -->
+                            <div class="planet-info">
+                                <div class="planet-name">Mars</div>
+                                <div class="planet-gravity">3.71 m/s²</div>
                             </div>
-                            <div class="planet-info-panel">
-                                <div class="current-planet">
-                                    <div class="planet-display">
-                                        <div class="planet-sphere" id="current-planet-sphere"></div>
-                                        <div class="planet-details">
-                                            <h4 id="current-planet-name">Earth</h4>
-                                            <div class="planet-stats">
-                                                <div class="planet-stat">
-                                                    <span class="planet-stat-label">Gravity:</span>
-                                                    <span class="planet-stat-value" id="current-gravity">9.81 m/s²</span>
-                                                </div>
-                                                <div class="planet-stat">
-                                                    <span class="planet-stat-label">Diameter:</span>
-                                                    <span class="planet-stat-value" id="current-diameter">12,742 km</span>
-                                                </div>
-                                                <div class="planet-stat">
-                                                    <span class="planet-stat-label">Atmosphere:</span>
-                                                    <span class="planet-stat-value" id="current-atmosphere">Yes</span>
-                                                </div>
-                                                <div class="planet-stat">
-                                                    <span class="planet-stat-label">Escape Velocity:</span>
-                                                    <span class="planet-stat-value" id="current-escape">11.2 km/s</span>
-                                                </div>
-                                            </div>
+                        </div>
+                        
+                        <div class="planet-card" data-planet="venus">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #DAA520, #F0E68C);">
+                                <i class="fas fa-venus"></i>
+                            </div>
+                            <div class="planet-info">
+                                <div class="planet-name">Venus</div>
+                                <div class="planet-gravity">8.87 m/s²</div>
+                            </div>
+                        </div>
+                        
+                        <div class="planet-card" data-planet="jupiter">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #D2691E, #F4A460);">
+                                <i class="fas fa-globe"></i>
+                            </div>
+                            <div class="planet-info">
+                                <div class="planet-name">Jupiter</div>
+                                <div class="planet-gravity">24.79 m/s²</div>
+                            </div>
+                        </div>
+                        
+                        <div class="planet-card" data-planet="custom">
+                            <div class="planet-icon" style="background: linear-gradient(135deg, #6A5ACD, #9370DB);">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="planet-info">
+                                <div class="planet-name">Custom</div>
+                                <div class="planet-gravity">Adjustable</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="planetary-comparison">
+                    <div class="comparison-controls">
+                        <div class="planet-control-group">
+                            <label class="planet-control-label">
+                                <i class="fas fa-tachometer-alt"></i> Velocity
+                            </label>
+                            <input type="range" class="planet-slider" id="planet-velocity" min="10" max="200" value="50">
+                            <div class="planet-slider-value">50 m/s</div>
+                        </div>
+                        
+                        <div class="planet-control-group">
+                            <label class="planet-control-label">
+                                <i class="fas fa-angle-up"></i> Angle
+                            </label>
+                            <input type="range" class="planet-slider" id="planet-angle" min="0" max="90" value="45">
+                            <div class="planet-slider-value">45°</div>
+                        </div>
+                        
+                        <button class="planet-simulate-btn" id="planet-simulate-btn">
+                            <i class="fas fa-rocket"></i> Simulate All Planets
+                        </button>
+                    </div>
+                    
+                    <div class="planetary-results">
+                        <div class="planet-results-table">
+                            <table class="planet-data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Planet</th>
+                                        <th>Gravity</th>
+                                        <th>Max Height</th>
+                                        <th>Max Range</th>
+                                        <th>Flight Time</th>
+                                        <th>Impact Velocity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="planet-data-body">
+                                    <!-- Data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="planet-chart-container">
+                            <canvas id="planet-comparison-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="planet-3d-viewer">
+                    <div class="viewer-header">
+                        <h3><i class="fas fa-eye"></i> 3D Planetary View</h3>
+                        <div class="view-controls">
+                            <button class="view-btn" id="rotate-view">
+                                <i class="fas fa-sync-alt"></i> Auto Rotate
+                            </button>
+                            <button class="view-btn" id="zoom-view">
+                                <i class="fas fa-search"></i> Zoom
+                            </button>
+                        </div>
+                    </div>
+                    <div class="planet-3d-canvas" id="planet-3d-canvas">
+                        <!-- 3D Canvas will be rendered here -->
+                    </div>
+                    <div class="planet-info-panel">
+                        <div class="current-planet">
+                            <div class="planet-display">
+                                <div class="planet-sphere" id="current-planet-sphere"></div>
+                                <div class="planet-details">
+                                    <h4 id="current-planet-name">Earth</h4>
+                                    <div class="planet-stats">
+                                        <div class="planet-stat">
+                                            <span class="planet-stat-label">Gravity:</span>
+                                            <span class="planet-stat-value" id="current-gravity">9.81 m/s²</span>
                                         </div>
-                                    </div>
-                                    <div class="projectile-trajectory">
-                                        <h5>Projectile Trajectory</h5>
-                                        <div class="trajectory-stats">
-                                            <div class="trajectory-stat">
-                                                <span>Peak Altitude:</span>
-                                                <strong id="trajectory-altitude">127.4 m</strong>
-                                            </div>
-                                            <div class="trajectory-stat">
-                                                <span>Orbital Velocity:</span>
-                                                <strong id="trajectory-velocity">7.9 km/s</strong>
-                                            </div>
-                                            <div class="trajectory-stat">
-                                                <span>Impact Force:</span>
-                                                <strong id="impact-force">245.3 kN</strong>
-                                            </div>
+                                        <div class="planet-stat">
+                                            <span class="planet-stat-label">Diameter:</span>
+                                            <span class="planet-stat-value" id="current-diameter">12,742 km</span>
+                                        </div>
+                                        <div class="planet-stat">
+                                            <span class="planet-stat-label">Atmosphere:</span>
+                                            <span class="planet-stat-value" id="current-atmosphere">Yes</span>
+                                        </div>
+                                        <div class="planet-stat">
+                                            <span class="planet-stat-label">Escape Velocity:</span>
+                                            <span class="planet-stat-value" id="current-escape">11.2 km/s</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="projectile-trajectory">
+                                <h5>Projectile Trajectory</h5>
+                                <div class="trajectory-stats">
+                                    <div class="trajectory-stat">
+                                        <span>Peak Altitude:</span>
+                                        <strong id="trajectory-altitude">127.4 m</strong>
+                                    </div>
+                                    <div class="trajectory-stat">
+                                        <span>Orbital Velocity:</span>
+                                        <strong id="trajectory-velocity">7.9 km/s</strong>
+                                    </div>
+                                    <div class="trajectory-stat">
+                                        <span>Impact Force:</span>
+                                        <strong id="impact-force">245.3 kN</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </section>
+                    </div>
                 </div>
+            </section>
 
-                <!-- Screen 6: Controls & Actions -->
-                <div class="screen screen-6" id="screen-6">
-                    <!-- Presets and Actions Section -->
-                    <section class="actions-panel">
-                        <h2 class="actions-title"><i class="fas fa-cogs"></i> Advanced Controls</h2>
-                        
-                        <div class="presets-grid">
-                            <button class="preset-button" data-preset="cannon">Cannon Shot</button>
-                            <button class="preset-button" data-preset="mortar">Mortar Fire</button>
-                            <button class="preset-button" data-preset="sniper">Sniper Rifle</button>
-                            <button class="preset-button" data-preset="space">Space Launch</button>
-                            <button class="preset-button" data-preset="maxrange">Max Range</button>
-                            <button class="preset-button" data-preset="moon">Moon Gravity</button>
-                            <button class="preset-button" data-preset="jupiter">Jupiter Gravity</button>
-                            <button class="preset-button" data-preset="parabolic">Perfect Parabola</button>
-                        </div>
-                        
-                        <div class="action-buttons">
-                            <button class="action-button" id="randomize-button">
-                                <i class="fas fa-random"></i> Randomize
-                            </button>
-                            <button class="action-button" id="pause-button">
-                                <i class="fas fa-pause"></i> Pause
-                            </button>
-                            <button class="action-button" id="history-replay">
-                                <i class="fas fa-play-circle"></i> Replay History
-                            </button>
-                            <button class="action-button reset" id="reset-all-button">
-                                <i class="fas fa-trash-alt"></i> Reset All
-                            </button>
-                            <button class="action-button" id="export-button">
-                                <i class="fas fa-download"></i> Export Data
-                            </button>
-                            <button class="action-button" id="export-json-button">
-                                <i class="fas fa-file-code"></i> Export JSON
-                            </button>
-                            <button class="action-button" id="reset-defaults">
-                                <i class="fas fa-undo"></i> Reset Defaults
-                            </button>
-                            <button class="action-button" id="save-preset">
-                                <i class="fas fa-save"></i> Save Preset
-                            </button>
-                        </div>
-                    </section>
+            <!-- Presets and Actions Section -->
+            <section class="actions-panel">
+                <h2 class="actions-title"><i class="fas fa-cogs"></i> Advanced Controls</h2>
+                
+                <div class="presets-grid">
+                    <button class="preset-button" data-preset="cannon">Cannon Shot</button>
+                    <button class="preset-button" data-preset="mortar">Mortar Fire</button>
+                    <button class="preset-button" data-preset="sniper">Sniper Rifle</button>
+                    <button class="preset-button" data-preset="space">Space Launch</button>
+                    <button class="preset-button" data-preset="maxrange">Max Range</button>
+                    <button class="preset-button" data-preset="moon">Moon Gravity</button>
+                    <button class="preset-button" data-preset="jupiter">Jupiter Gravity</button>
+                    <button class="preset-button" data-preset="parabolic">Perfect Parabola</button>
                 </div>
-            </div>
-
-            <!-- Screen Navigation (Bottom) -->
-            <nav class="screen-navigation">
-                <button class="nav-btn active" data-screen="1">
-                    <i class="fas fa-tv"></i>
-                    <span>3D & Data</span>
-                </button>
-                <button class="nav-btn" data-screen="2">
-                    <i class="fas fa-sliders-h"></i>
-                    <span>Parameters</span>
-                </button>
-                <button class="nav-btn" data-screen="3">
-                    <i class="fas fa-wind"></i>
-                    <span>Environment</span>
-                </button>
-                <button class="nav-btn" data-screen="4">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Visualization</span>
-                </button>
-                <button class="nav-btn" data-screen="5">
-                    <i class="fas fa-globe-americas"></i>
-                    <span>Planetary</span>
-                </button>
-                <button class="nav-btn" data-screen="6">
-                    <i class="fas fa-cogs"></i>
-                    <span>Controls</span>
-                </button>
-            </nav>
+                
+                <div class="action-buttons">
+                    <button class="action-button" id="randomize-button">
+                        <i class="fas fa-random"></i> Randomize
+                    </button>
+                    <button class="action-button" id="pause-button">
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="action-button" id="history-replay">
+                        <i class="fas fa-play-circle"></i> Replay History
+                    </button>
+                    <button class="action-button reset" id="reset-all-button">
+                        <i class="fas fa-trash-alt"></i> Reset All
+                    </button>
+                    <button class="action-button" id="export-button">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <button class="action-button" id="export-json-button">
+                        <i class="fas fa-file-code"></i> Export JSON
+                    </button>
+                    <button class="action-button" id="reset-defaults">
+                        <i class="fas fa-undo"></i> Reset Defaults
+                    </button>
+                    <button class="action-button" id="save-preset">
+                        <i class="fas fa-save"></i> Save Preset
+                    </button>
+                </div>
+            </section>
         </main>
 
         <!-- Footer -->
@@ -2502,6 +2381,8 @@
         const windSpeedInput = document.getElementById('wind-speed-input');
         const windSpeedValue = document.getElementById('wind-speed-value');
         const windDisplay = document.getElementById('wind-display');
+        const toggleWindButton = document.getElementById('toggle-wind');
+        const resetWindButton = document.getElementById('reset-wind');
         const fullscreenWindIndicator = document.getElementById('fullscreen-wind-indicator');
         const fullscreenWindArrow = document.getElementById('fullscreen-wind-arrow');
         const fullscreenWindSpeed = document.getElementById('fullscreen-wind-speed');
@@ -2565,10 +2446,6 @@
         const planetDataBody = document.getElementById('planet-data-body');
         const rotateViewBtn = document.getElementById('rotate-view');
         const zoomViewBtn = document.getElementById('zoom-view');
-        
-        // Screen navigation
-        const navButtons = document.querySelectorAll('.nav-btn');
-        const screens = document.querySelectorAll('.screen');
         
         // ====== THREE.JS INITIALIZATION ======
         function initThreeJS() {
@@ -3502,40 +3379,6 @@
             }
         }
         
-        // ====== SCREEN NAVIGATION ======
-        function initScreenNavigation() {
-            navButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const screenId = this.dataset.screen;
-                    
-                    // Update navigation buttons
-                    navButtons.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Show selected screen
-                    screens.forEach(screen => screen.classList.remove('active'));
-                    document.getElementById(`screen-${screenId}`).classList.add('active');
-                    
-                    // Update status message
-                    const screenNames = {
-                        '1': '3D Simulation & Flight Data',
-                        '2': 'Launch Parameters',
-                        '3': 'Environment & Customization',
-                        '4': 'Visualization & History',
-                        '5': 'Planetary Simulation',
-                        '6': 'Advanced Controls'
-                    };
-                    
-                    statusMessage.textContent = `Viewing: ${screenNames[screenId]}`;
-                    setTimeout(() => {
-                        if (!simulationRunning) {
-                            statusMessage.textContent = 'Advanced Simulation Ready';
-                        }
-                    }, 2000);
-                });
-            });
-        }
-        
         // ====== PHYSICS SIMULATION FUNCTIONS ======
         function calculateProjectilePosition(time) {
             const angleRad = launchAngle * Math.PI / 180;
@@ -4040,6 +3883,12 @@
         
         function toggleWind() {
             windEnabled = !windEnabled;
+            toggleWindButton.innerHTML = windEnabled ? 
+                '<i class="fas fa-power-off"></i> Wind: ON' : 
+                '<i class="fas fa-power-off"></i> Wind: OFF';
+            toggleWindButton.style.backgroundColor = windEnabled ? 
+                'var(--button-deep-violet)' : '#666';
+            
             updateWindVisualization();
         }
         
@@ -4544,6 +4393,18 @@
                 updateWindControls();
             });
             
+            // Wind buttons
+            const toggleWindButton = document.getElementById('toggle-wind');
+            const resetWindButton = document.getElementById('reset-wind');
+            
+            if (toggleWindButton) {
+                toggleWindButton.addEventListener('click', toggleWind);
+            }
+            
+            if (resetWindButton) {
+                resetWindButton.addEventListener('click', resetWind);
+            }
+            
             // Launch button
             launchButton.addEventListener('click', startSimulation);
             
@@ -4834,9 +4695,6 @@
             // Set up event listeners
             setupEventListeners();
             
-            // Initialize screen navigation
-            initScreenNavigation();
-            
             // Update UI with initial values
             updateControlValues();
             updateAdvancedControls();
@@ -4865,3 +4723,4 @@
     </script>
 </body>
 </html>
+
