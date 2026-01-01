@@ -2,7 +2,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SIT Projectile Motion Simulator - Advanced</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.min.js"></script>
@@ -62,8 +61,8 @@
         .header-section {
             background-color: var(--deep-teal);
             color: var(--text-light);
-            padding: 15px 20px;
-            width: 100%;
+            padding: 0px 0px;
+            width: 0%;
             box-shadow: 0 4px 12px var(--shadow-medium);
             z-index: 100;
             position: sticky;
@@ -74,15 +73,15 @@
         .header-content {
             display: flex;
             flex-direction: column;
-            max-width: 1400px;
+            max-width: 0px;
             margin: 0 auto;
-            width: 100%;
+            width: 0%;
             align-items: flex-start;
         }
 
         .main-heading {
-            font-size: 42px;
-            font-weight: 900;
+            font-size: 0px;
+            font-weight: 0;
             letter-spacing: 2px;
             margin-bottom: 4px;
             text-align: left;
