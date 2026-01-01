@@ -62,7 +62,7 @@
         .header-section {
             background-color: var(--deep-teal);
             color: var(--text-light);
-            padding: 15px 20px;
+            padding: 8px 20px;
             width: 100%;
             box-shadow: 0 4px 12px var(--shadow-medium);
             z-index: 100;
@@ -77,26 +77,28 @@
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
-            align-items: flex-start; /* Changed from center to flex-start */
+            align-items: center;
         }
 
         .main-heading {
-            font-size: 42px; /* Larger for emphasis */
+            font-size: 28px; /* Reduced from 42px */
             font-weight: 900;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-            text-align: left; /* Changed from center to left */
+            letter-spacing: 1px; /* Reduced from 2px */
+            margin-bottom: 2px; /* Reduced from 4px */
+            text-align: center;
             text-transform: uppercase;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            line-height: 1.1;
         }
 
         .sub-heading {
-            font-size: 16px;
+            font-size: 14px; /* Reduced from 16px */
             font-weight: 400;
             opacity: 0.9;
-            text-align: left; /* Changed from center to left */
-            letter-spacing: 3px;
+            text-align: center;
+            letter-spacing: 2px; /* Reduced from 3px */
             text-transform: uppercase;
+            line-height: 1.2;
         }
 
         /* ====== MAIN CONTENT AREA ====== */
@@ -107,7 +109,7 @@
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
-            padding: 20px;
+            padding: 15px 20px 20px 20px;
         }
 
         /* ====== CONTROL PANEL ====== */
@@ -1380,6 +1382,77 @@
             border-bottom: 8px solid transparent;
         }
 
+        /* ====== ABOUT APPLICATION SECTION ====== */
+        .about-application {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 6px 16px var(--shadow-light);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .about-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--deep-teal);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-orange);
+        }
+
+        .about-subheading {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--button-deep-violet);
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        .about-content {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .about-creator {
+            font-size: 14px;
+            color: var(--deep-teal);
+            font-weight: 600;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .about-button {
+            background-color: var(--button-light-purple);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .about-button:hover {
+            background-color: #7B68EE;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(147, 112, 219, 0.4);
+        }
+
         /* ====== FOOTER ====== */
         .footer-section {
             background-color: var(--deep-teal);
@@ -1462,7 +1535,12 @@
             }
             
             .main-heading {
-                font-size: 32px;
+                font-size: 24px;
+            }
+            
+            .sub-heading {
+                font-size: 12px;
+                letter-spacing: 1px;
             }
             
             .planetary-results {
@@ -1492,6 +1570,18 @@
             .customization-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .about-title {
+                font-size: 18px;
+            }
+            
+            .about-subheading {
+                font-size: 16px;
+            }
+            
+            .about-content {
+                font-size: 14px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1508,11 +1598,11 @@
             }
             
             .main-heading {
-                font-size: 28px;
+                font-size: 22px;
             }
             
             .sub-heading {
-                font-size: 14px;
+                font-size: 11px;
                 letter-spacing: 1px;
             }
             
@@ -1522,6 +1612,10 @@
             
             #planet-3d-canvas {
                 height: 300px;
+            }
+            
+            .about-button {
+                width: 100%;
             }
         }
 
@@ -1584,8 +1678,8 @@
         <!-- Header Section -->
         <header class="header-section">
             <div class="header-content">
-                <h1 class="main-heading">SIT</h1>
-                <p class="sub-heading">Advanced Projectile Motion Simulator</p>
+                <h1 class="main-heading">Advanced Projectile Motion Simulator</h1>
+                <p class="sub-heading">SIT - Shaggar Institute of Technology</p>
             </div>
         </header>
 
@@ -2116,6 +2210,31 @@
                 </div>
             </section>
 
+            <!-- ====== ABOUT APPLICATION SECTION ====== -->
+            <section class="about-application" id="about-section" style="display: none;">
+                <h2 class="about-title"><i class="fas fa-info-circle"></i> About Application</h2>
+                <div class="about-subheading">"Integrity First, Excellence Always"</div>
+                <div class="about-content">
+                    <p>This Advanced Projectile Motion Simulator is a comprehensive physics simulation tool that allows users to explore projectile motion in a realistic 3D environment with advanced physics parameters.</p>
+                    <p>The simulator features:</p>
+                    <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                        <li>Real-time 3D projectile visualization</li>
+                        <li>Advanced physics parameters (drag coefficient, lift force, spin rate)</li>
+                        <li>Wind and environmental effects</li>
+                        <li>Planetary gravity comparisons</li>
+                        <li>Real-time data analysis and charts</li>
+                        <li>Multiple projectile shapes and customization options</li>
+                    </ul>
+                </div>
+                <div class="about-creator">
+                    This application was created by <strong>Bekama Regasa Negewo</strong>,<br>
+                    1st year student at Shaggar Institute of Technology, Ethiopia.
+                </div>
+                <button class="about-button" id="close-about">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </section>
+
             <!-- Presets and Actions Section -->
             <section class="actions-panel">
                 <h2 class="actions-title"><i class="fas fa-cogs"></i> Advanced Controls</h2>
@@ -2155,6 +2274,9 @@
                     </button>
                     <button class="action-button" id="save-preset">
                         <i class="fas fa-save"></i> Save Preset
+                    </button>
+                    <button class="action-button" id="about-button">
+                        <i class="fas fa-info-circle"></i> About Application
                     </button>
                 </div>
             </section>
@@ -2273,6 +2395,14 @@
         let lastTimestamp = 0;
         let simulationStartTime = 0;
         
+        // Fullscreen simulation variables
+        let fullscreenProjectile, fullscreenTrajectoryLine;
+        let fullscreenSimulationRunning = false;
+        let fullscreenSimulationPaused = false;
+        let fullscreenSimulationTime = 0;
+        let fullscreenSimulationStartTime = 0;
+        let fullscreenAnimationId = null;
+        
         // Planetary data
         const planets = {
             earth: {
@@ -2381,8 +2511,6 @@
         const windSpeedInput = document.getElementById('wind-speed-input');
         const windSpeedValue = document.getElementById('wind-speed-value');
         const windDisplay = document.getElementById('wind-display');
-        const toggleWindButton = document.getElementById('toggle-wind');
-        const resetWindButton = document.getElementById('reset-wind');
         const fullscreenWindIndicator = document.getElementById('fullscreen-wind-indicator');
         const fullscreenWindArrow = document.getElementById('fullscreen-wind-arrow');
         const fullscreenWindSpeed = document.getElementById('fullscreen-wind-speed');
@@ -2403,6 +2531,9 @@
         const historyReplayButton = document.getElementById('history-replay');
         const fullscreenLaunchBtn = document.getElementById('fullscreen-launch');
         const fullscreenResetBtn = document.getElementById('fullscreen-reset');
+        const aboutButton = document.getElementById('about-button');
+        const closeAboutButton = document.getElementById('close-about');
+        const aboutSection = document.getElementById('about-section');
         
         // Data display elements
         const currentHeightEl = document.getElementById('current-height');
@@ -3285,18 +3416,19 @@
             fullscreenScene = new THREE.Scene();
             
             // Create fullscreen camera
+            const canvas = document.getElementById('fullscreen-canvas');
             fullscreenCamera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 10000);
             fullscreenCamera.position.set(200, 150, 300);
             
             // Create fullscreen renderer
-            const fullscreenCanvas = document.getElementById('fullscreen-canvas');
             fullscreenRenderer = new THREE.WebGLRenderer({ 
-                canvas: fullscreenCanvas,
+                canvas: canvas,
                 antialias: true
             });
             fullscreenRenderer.setSize(window.innerWidth, window.innerHeight);
             fullscreenRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             fullscreenRenderer.shadowMap.enabled = true;
+            fullscreenRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
             
             // Add orbit controls for fullscreen
             fullscreenControls = new THREE.OrbitControls(fullscreenCamera, fullscreenRenderer.domElement);
@@ -3347,6 +3479,15 @@
                 mountain.castShadow = true;
                 fullscreenScene.add(mountain);
             }
+            
+            // Create projectile for fullscreen
+            createFullscreenProjectile();
+            
+            // Create trajectory line for fullscreen
+            createFullscreenTrajectoryLine();
+            
+            // Create launch platform for fullscreen
+            createFullscreenLaunchPlatform();
         }
         
         function createFullscreenSquareGround() {
@@ -3377,6 +3518,251 @@
                     fullscreenScene.add(square);
                 }
             }
+        }
+        
+        function createFullscreenProjectile() {
+            // Remove existing projectile
+            if (fullscreenProjectile) {
+                fullscreenScene.remove(fullscreenProjectile);
+                if (fullscreenProjectile.geometry) fullscreenProjectile.geometry.dispose();
+                if (fullscreenProjectile.material) fullscreenProjectile.material.dispose();
+            }
+            
+            let geometry;
+            const color = new THREE.Color(currentProjectileColor);
+            
+            switch(currentProjectileShape) {
+                case 'sphere':
+                    geometry = new THREE.SphereGeometry(3, 32, 32);
+                    break;
+                case 'cube':
+                    geometry = new THREE.BoxGeometry(4, 4, 4);
+                    break;
+                case 'pyramid':
+                    geometry = new THREE.ConeGeometry(2, 4, 4);
+                    break;
+                case 'cylinder':
+                    geometry = new THREE.CylinderGeometry(2, 2, 5, 16);
+                    break;
+                default:
+                    geometry = new THREE.SphereGeometry(3, 32, 32);
+            }
+            
+            const material = new THREE.MeshPhongMaterial({ 
+                color: color,
+                shininess: 100,
+                specular: 0xFFFFFF
+            });
+            
+            fullscreenProjectile = new THREE.Mesh(geometry, material);
+            fullscreenProjectile.castShadow = true;
+            fullscreenProjectile.position.set(0, launchHeight, 0);
+            fullscreenScene.add(fullscreenProjectile);
+        }
+        
+        function createFullscreenTrajectoryLine() {
+            // Remove existing trajectory line
+            if (fullscreenTrajectoryLine) {
+                fullscreenScene.remove(fullscreenTrajectoryLine);
+                if (fullscreenTrajectoryLine.geometry) fullscreenTrajectoryLine.geometry.dispose();
+                if (fullscreenTrajectoryLine.material) fullscreenTrajectoryLine.material.dispose();
+            }
+            
+            let material;
+            const color = new THREE.Color(0xFF4444);
+            
+            switch(currentTrajectoryStyle) {
+                case 'line':
+                    material = new THREE.LineBasicMaterial({ 
+                        color: color,
+                        linewidth: 4,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    break;
+                case 'dashed':
+                    material = new THREE.LineDashedMaterial({ 
+                        color: color,
+                        linewidth: 3,
+                        dashSize: 4,
+                        gapSize: 3,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    break;
+                case 'points':
+                    material = new THREE.PointsMaterial({ 
+                        color: color,
+                        size: 4,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    break;
+                default:
+                    material = new THREE.LineBasicMaterial({ 
+                        color: color,
+                        linewidth: 4,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+            }
+            
+            const geometry = new THREE.BufferGeometry();
+            fullscreenTrajectoryLine = currentTrajectoryStyle === 'points' ? 
+                new THREE.Points(geometry, material) : 
+                new THREE.Line(geometry, material);
+            fullscreenScene.add(fullscreenTrajectoryLine);
+        }
+        
+        function createFullscreenLaunchPlatform() {
+            const platformGroup = new THREE.Group();
+            
+            // Base
+            const baseGeometry = new THREE.CylinderGeometry(12, 15, 3, 16);
+            const baseMaterial = new THREE.MeshLambertMaterial({ color: 0x2C4A4E });
+            const base = new THREE.Mesh(baseGeometry, baseMaterial);
+            base.position.y = 1.5;
+            platformGroup.add(base);
+            
+            // Launcher tube
+            const tubeGeometry = new THREE.CylinderGeometry(3, 3.5, launchHeight, 8);
+            const tubeMaterial = new THREE.MeshLambertMaterial({ color: 0x555555 });
+            const tube = new THREE.Mesh(tubeGeometry, tubeMaterial);
+            tube.position.y = launchHeight / 2 + 1.5;
+            platformGroup.add(tube);
+            
+            platformGroup.position.set(0, 0, 0);
+            fullscreenScene.add(platformGroup);
+        }
+        
+        // ====== FULLSCREEN SIMULATION FUNCTIONS ======
+        function startFullscreenSimulation() {
+            if (fullscreenSimulationRunning) {
+                // If already running, pause it
+                fullscreenSimulationPaused = !fullscreenSimulationPaused;
+                fullscreenLaunchBtn.innerHTML = fullscreenSimulationPaused ? 
+                    '<i class="fas fa-play"></i> Resume' : 
+                    '<i class="fas fa-pause"></i> Pause';
+                statusMessage.textContent = fullscreenSimulationPaused ? 'Fullscreen Simulation Paused' : 'Fullscreen Simulation Running';
+                return;
+            }
+            
+            // Reset simulation variables
+            fullscreenSimulationRunning = true;
+            fullscreenSimulationPaused = false;
+            fullscreenSimulationTime = 0;
+            fullscreenSimulationStartTime = 0;
+            
+            // Reset projectile position
+            fullscreenProjectile.position.set(0, launchHeight, 0);
+            
+            // Clear trajectory line
+            fullscreenTrajectoryLine.geometry.dispose();
+            fullscreenTrajectoryLine.geometry = new THREE.BufferGeometry();
+            
+            // Update button state
+            fullscreenLaunchBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Simulation';
+            statusMessage.textContent = 'Fullscreen Simulation Running';
+            
+            // Start animation
+            fullscreenAnimationId = requestAnimationFrame(updateFullscreenSimulation);
+        }
+        
+        function updateFullscreenSimulation(timestamp) {
+            if (!fullscreenSimulationRunning || fullscreenSimulationPaused) return;
+            
+            if (fullscreenSimulationStartTime === 0) {
+                fullscreenSimulationStartTime = timestamp;
+            }
+            
+            const deltaTime = (timestamp - fullscreenSimulationStartTime) / 1000;
+            fullscreenSimulationTime = deltaTime;
+            
+            // Calculate projectile position with advanced physics
+            const pos = calculateProjectilePosition(deltaTime);
+            
+            // Update projectile position and rotation (for spin effect)
+            fullscreenProjectile.position.set(pos.x, pos.y, 0);
+            if (spinRate > 0) {
+                fullscreenProjectile.rotation.x += spinRate * 0.001;
+                fullscreenProjectile.rotation.y += spinRate * 0.0005;
+            }
+            
+            // Update trajectory line
+            updateFullscreenTrajectoryLine(pos);
+            
+            // Check if projectile has hit the ground
+            if (pos.y <= 0 && fullscreenSimulationTime > 0.1) {
+                endFullscreenSimulation();
+            }
+            
+            // Continue animation
+            fullscreenAnimationId = requestAnimationFrame(updateFullscreenSimulation);
+        }
+        
+        function updateFullscreenTrajectoryLine(currentPos) {
+            const positions = fullscreenTrajectoryLine.geometry.attributes.position;
+            
+            if (!positions || positions.count >= 1000) {
+                const newGeometry = new THREE.BufferGeometry();
+                fullscreenTrajectoryLine.geometry = newGeometry;
+            }
+            
+            let points = [];
+            if (fullscreenTrajectoryLine.geometry.attributes.position) {
+                const array = fullscreenTrajectoryLine.geometry.attributes.position.array;
+                for (let i = 0; i < array.length; i += 3) {
+                    points.push(new THREE.Vector3(array[i], array[i+1], array[i+2]));
+                }
+            }
+            
+            points.push(new THREE.Vector3(currentPos.x, currentPos.y, 0));
+            
+            const newPositions = new Float32Array(points.length * 3);
+            points.forEach((point, i) => {
+                newPositions[i * 3] = point.x;
+                newPositions[i * 3 + 1] = point.y;
+                newPositions[i * 3 + 2] = point.z;
+            });
+            
+            fullscreenTrajectoryLine.geometry.setAttribute('position', new THREE.BufferAttribute(newPositions, 3));
+            
+            // Update dashed line
+            if (currentTrajectoryStyle === 'dashed') {
+                fullscreenTrajectoryLine.computeLineDistances();
+            }
+        }
+        
+        function endFullscreenSimulation() {
+            fullscreenSimulationRunning = false;
+            fullscreenSimulationPaused = false;
+            
+            // Update button state
+            fullscreenLaunchBtn.innerHTML = '<i class="fas fa-rocket"></i> Launch Projectile';
+            statusMessage.textContent = 'Fullscreen Simulation Complete';
+            
+            // Cancel animation
+            if (fullscreenAnimationId) {
+                cancelAnimationFrame(fullscreenAnimationId);
+                fullscreenAnimationId = null;
+            }
+        }
+        
+        function resetFullscreenSimulation() {
+            endFullscreenSimulation();
+            
+            // Reset projectile position
+            fullscreenProjectile.position.set(0, launchHeight, 0);
+            fullscreenProjectile.rotation.set(0, 0, 0);
+            
+            // Clear trajectory line
+            fullscreenTrajectoryLine.geometry.dispose();
+            fullscreenTrajectoryLine.geometry = new THREE.BufferGeometry();
+            
+            statusMessage.textContent = 'Fullscreen Simulation Reset';
+            setTimeout(() => {
+                statusMessage.textContent = 'Advanced Simulation Ready';
+            }, 2000);
         }
         
         // ====== PHYSICS SIMULATION FUNCTIONS ======
@@ -3635,6 +4021,10 @@
             // Update UI controls
             updateControlValues();
             
+            // Update 3D scene
+            createProjectile();
+            createFullscreenProjectile();
+            
             // Update status
             statusMessage.textContent = `Loaded simulation from ${record.timestamp}`;
             setTimeout(() => {
@@ -3774,10 +4164,13 @@
             
             // Reset simulation
             resetSimulation();
+            resetFullscreenSimulation();
             
             // Update 3D scene
             createProjectile();
             createTrajectoryLine();
+            createFullscreenProjectile();
+            createFullscreenTrajectoryLine();
             updateFogEffect();
             setCameraView(currentView);
             
@@ -3879,23 +4272,6 @@
             const directions = ['East', 'North-East', 'North', 'North-West', 'West', 'South-West', 'South', 'South-East'];
             const index = Math.round((degrees % 360) / 45) % 8;
             return directions[index];
-        }
-        
-        function toggleWind() {
-            windEnabled = !windEnabled;
-            toggleWindButton.innerHTML = windEnabled ? 
-                '<i class="fas fa-power-off"></i> Wind: ON' : 
-                '<i class="fas fa-power-off"></i> Wind: OFF';
-            toggleWindButton.style.backgroundColor = windEnabled ? 
-                'var(--button-deep-violet)' : '#666';
-            
-            updateWindVisualization();
-        }
-        
-        function resetWind() {
-            windSpeed = 0;
-            windDirection = 0;
-            updateWindControls();
         }
         
         // ====== CHART.JS INITIALIZATION ======
@@ -4083,6 +4459,8 @@
             // Update 3D scene
             createProjectile();
             createTrajectoryLine();
+            createFullscreenProjectile();
+            createFullscreenTrajectoryLine();
             updateFogEffect();
             
             statusMessage.textContent = 'Parameters randomized';
@@ -4174,6 +4552,18 @@
             }, 2000);
         }
         
+        // ====== ABOUT APPLICATION FUNCTIONS ======
+        function showAboutSection() {
+            aboutSection.style.display = 'block';
+            aboutSection.scrollIntoView({ behavior: 'smooth' });
+            statusMessage.textContent = 'About Application';
+        }
+        
+        function hideAboutSection() {
+            aboutSection.style.display = 'none';
+            statusMessage.textContent = 'Advanced Simulation Ready';
+        }
+        
         // ====== FULLSCREEN MODE FUNCTIONS ======
         function enterFullscreenMode() {
             fullscreenMode = true;
@@ -4189,6 +4579,10 @@
             fullscreenCamera.position.set(200, 150, 300);
             fullscreenControls.update();
             
+            // Update projectile and trajectory in fullscreen
+            createFullscreenProjectile();
+            createFullscreenTrajectoryLine();
+            
             // Update wind indicator
             updateWindVisualization();
             
@@ -4201,8 +4595,8 @@
             document.body.style.overflow = 'auto';
             
             // Stop any running simulation in fullscreen
-            if (simulationRunning) {
-                endSimulation();
+            if (fullscreenSimulationRunning) {
+                endFullscreenSimulation();
             }
             
             statusMessage.textContent = 'Exited fullscreen mode';
@@ -4344,27 +4738,23 @@
             // Environmental controls
             rainEffectCheckbox.addEventListener('change', function() {
                 rainEffect = this.checked;
-                if (rainEffect && !rainEffectActive) {
+                if (rainEffect) {
                     createRainEffect();
-                    rainEffectActive = true;
-                } else if (!rainEffect && rainEffectActive) {
+                } else {
                     // Remove rain particles
                     rainParticles.forEach(rain => scene.remove(rain));
                     rainParticles = [];
-                    rainEffectActive = false;
                 }
             });
             
             snowEffectCheckbox.addEventListener('change', function() {
                 snowEffect = this.checked;
-                if (snowEffect && !snowEffectActive) {
+                if (snowEffect) {
                     createSnowEffect();
-                    snowEffectActive = true;
-                } else if (!snowEffect && snowEffectActive) {
+                } else {
                     // Remove snow particles
                     snowParticles.forEach(snow => scene.remove(snow));
                     snowParticles = [];
-                    snowEffectActive = false;
                 }
             });
             
@@ -4392,18 +4782,6 @@
                 windSpeed = value;
                 updateWindControls();
             });
-            
-            // Wind buttons
-            const toggleWindButton = document.getElementById('toggle-wind');
-            const resetWindButton = document.getElementById('reset-wind');
-            
-            if (toggleWindButton) {
-                toggleWindButton.addEventListener('click', toggleWind);
-            }
-            
-            if (resetWindButton) {
-                resetWindButton.addEventListener('click', resetWind);
-            }
             
             // Launch button
             launchButton.addEventListener('click', startSimulation);
@@ -4445,10 +4823,10 @@
             exitFullscreenBtn.addEventListener('click', exitFullscreenMode);
             
             // Fullscreen launch button
-            fullscreenLaunchBtn.addEventListener('click', startSimulation);
+            fullscreenLaunchBtn.addEventListener('click', startFullscreenSimulation);
             
             // Fullscreen reset button
-            fullscreenResetBtn.addEventListener('click', resetSimulation);
+            fullscreenResetBtn.addEventListener('click', resetFullscreenSimulation);
             
             // Randomize button
             randomizeButton.addEventListener('click', randomizeParameters);
@@ -4505,6 +4883,10 @@
             exportButton.addEventListener('click', exportData);
             exportJsonButton.addEventListener('click', exportJsonData);
             
+            // About button
+            aboutButton.addEventListener('click', showAboutSection);
+            closeAboutButton.addEventListener('click', hideAboutSection);
+            
             // View control buttons
             viewButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -4527,6 +4909,7 @@
                 button.addEventListener('click', function() {
                     currentProjectileShape = this.dataset.shape;
                     createProjectile();
+                    createFullscreenProjectile();
                     
                     shapeButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
@@ -4542,6 +4925,7 @@
                 button.addEventListener('click', function() {
                     currentProjectileColor = this.dataset.color;
                     createProjectile();
+                    createFullscreenProjectile();
                     
                     colorButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
@@ -4557,6 +4941,7 @@
                 button.addEventListener('click', function() {
                     currentTrajectoryStyle = this.dataset.trajectory;
                     createTrajectoryLine();
+                    createFullscreenTrajectoryLine();
                     
                     trajectoryButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
